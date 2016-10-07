@@ -1,0 +1,154 @@
+param(    
+    [string[]] $Environments = "qa2",
+
+    [string] $TopologyPath = '..\..\carbon-secrets\topology.json',
+
+    [boolean] $Build = $false,
+
+    [string] $Configuration = "Release",
+
+    [boolean] $ForceNew = $false,
+
+    [boolean] $Bump = $false,
+
+    [boolean] $SourceMaps = $false,
+
+    [boolean] $ReplaceDevPort = $false,
+
+    [boolean] $Upgrade = $false
+)
+
+$ErrorActionPreference = "Stop"
+
+function Deploy($env, $fabric)
+{
+    try
+    {
+        $versionFile = Resolve-Path ..\version.json
+        Push-Location ..\..\carbon-server\Carbon.Fabric\Scripts
+
+        $appParams = @{}
+
+        if ($fabric.requiredSecrets)
+        {
+            Connect-Environment $env
+
+            $cert = $fabric.certificates | where {$_.type -eq "Encrypt"} | select -First 1
+            foreach ($secret in $fabric.requiredSecrets)
+            {
+                $vaultKey = "$($secret.name)-$($secret.environment)"                
+                $s = Get-AzureKeyVaultSecret -VaultName "carbon-vault-$($env.name)" -Name $vaultKey
+                $encrypted = Invoke-ServiceFabricEncryptText -CertStore -CertThumbprint $cert.thumbprint -Text $s.SecretValueText -StoreLocation LocalMachine -StoreName My
+                $appParams.Add($secret.parameter, $encrypted)
+            }
+        }
+       
+        if ($fabric.certificates)
+        {
+            $clusterCertificate = $fabric.certificates | where {$_.type -eq "Cluster"} | Select-Object -First 1
+            if ($clusterCertificate)
+            {            
+                Write-Host "Connecting to $($fabric.endpoint)"
+                Connect-ServiceFabricCluster -ConnectionEndpoint $fabric.endpoint `
+                    -X509Credential -ServerCertThumbprint $clusterCertificate.thumbprint `
+                    -FindType FindByThumbprint -FindValue $clusterCertificate.thumbprint -StoreLocation CurrentUser -StoreName My            
+            }
+
+            foreach ($cert in ($fabric.certificates | where {$_.type -ne "Cluster"}))
+            {
+                $appParams.Add("Certificates_$($cert.type)", $cert.thumbprint)
+            }
+        }
+        else
+        {
+            Connect-ServiceFabricCluster
+        }        
+
+        .\Deploy-FabricApplication.ps1 -PublishProfileFile "..\PublishProfiles\$($fabric.profile)" `
+            -UseExistingClusterConnection            `
+            -ApplicationPackagePath "..\pkg\$Configuration\" `
+            -Configuration $Configuration `
+            -ApplicationParameter $appParams `
+            -UnregisterUnusedApplicationVersionsAfterUpgrade $true `
+            -VersionFile $versionFile `
+            -ForceNew $ForceNew `
+            -Bump $Bump `
+            -ReplaceDevPort $ReplaceDevPort `
+            -Upgrade $Upgrade
+    }
+    finally
+    {
+        Pop-Location
+    }
+}
+
+function EnsureCleanDir([string]$dir)
+{
+    if (Test-Path $dir)
+    {
+        if ($dir.IndexOf('Data\app') -eq -1)
+        {
+            throw "Could not clean dir $dir"
+        }
+        Remove-Item "$dir\*" -Recurse
+    }
+    else
+    {
+        New-Item $dir -ItemType Directory
+    }
+}
+
+function Run()
+{
+    Remove-Module helpers -ErrorAction Ignore
+    Import-Module .\helpers.psm1
+
+    if ($Build)
+    {
+        Write-Host "Packaging project..."        
+
+        $dataPackage = "..\..\carbon-server\Carbon.Services.FabricHost\PackageRoot\Data\app"
+        EnsureCleanDir (Join-Path $dataPackage target)
+        EnsureCleanDir (Join-Path $dataPackage img)
+        EnsureCleanDir (Join-Path $dataPackage fonts\apache\opensans)
+
+        Copy-Item -Path ..\..\carbon-ui\Sketch.Frontend\target\* -Destination (Join-Path $dataPackage target) -Force -Exclude *.map
+        Copy-Item -Path ..\..\carbon-ui\Sketch.Frontend\img\* -Destination (Join-Path $dataPackage img) -Recurse -Force
+        Copy-Item -Path ..\..\carbon-ui\Sketch.Frontend\fonts\apache\opensans\* -Destination (Join-Path $dataPackage fonts\apache\opensans) -Force
+        Copy-Item -Path ..\..\carbon-ui\Sketch.Frontend\*.html -Destination $dataPackage -Force
+
+        $msbuild = Invoke-MsBuild -Path ..\..\carbon-server\Carbon.Fabric\Carbon.Fabric.sfproj -MsBuildParameters "/target:Package /property:Platform=x64;Configuration=$Configuration"    
+        if ($msbuild.BuildSucceeded -ne $true)
+        {
+            throw "Build failed"
+        }        
+    }   
+    
+    $topology = ConvertFrom-Json (Get-Content $TopologyPath -Raw)
+
+    foreach ($envName in $Environments)
+    {
+        $env = $topology.environments | where {$_.name -eq $envName}
+        if ($env -eq $null)
+        {
+            Write-Error "Unknown environment $envName"
+            continue
+        }                    
+
+        $groups = $env.groups | where {$_.fabric}
+        foreach ($group in $groups)
+        {                                             
+            Deploy $env $group.fabric
+        }
+    }    
+}
+
+try
+{
+    Push-Location $PSScriptRoot
+    Run
+}
+finally
+{
+    Pop-Location
+}
