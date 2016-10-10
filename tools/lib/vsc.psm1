@@ -37,7 +37,7 @@ function Initialize-Vcs{
     $password = $Env:GIT_PASSWORD
     $jobs = @()
     
-    $jobs += Update "$env:InetRoot\carbon-secrets1" "https://${user}:${password}@carbonproject.visualstudio.com/carbonium/_git/carbon-secrets" "master"
+    $jobs += Update "$env:InetRoot\carbon-secrets" "https://${user}:${password}@carbonproject.visualstudio.com/carbonium/_git/carbon-secrets" "master"
     
     $jobs | % {$_ | Receive-job -Wait -AutoRemoveJob}
 }

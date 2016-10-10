@@ -1,4 +1,4 @@
-﻿function Get-Environment([string] $Name, [string] $TopologyPath = (join-path $PSScriptRoot '..\..\carbon-secrets\topology.json'))
+﻿function Get-Environment([string] $Name, [string] $TopologyPath = "$Env:InetRoot\carbon-secrets\topology.json")
 {
     $topology = ConvertFrom-Json (Get-Content $TopologyPath -Raw)
     $env = $topology.environments | where {$_.name -eq $Name}
