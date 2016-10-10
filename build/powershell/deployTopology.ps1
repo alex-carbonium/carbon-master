@@ -78,7 +78,7 @@ Connection Timeout=30;" -replace '\r\n',''
 function Run()
 {
     Remove-Module helpers -ErrorAction Ignore    
-    Import-Module .\helpers.psm1            
+    Import-Module .\helpers.psm1        
 
     $templateRoot = '..\..\carbon-server\Carbon.Deployment\Templates'
     $topology = ConvertFrom-Json (Get-Content $TopologyPath -Raw)

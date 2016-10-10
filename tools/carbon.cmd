@@ -1,0 +1,1 @@
+powershell -NoExit -command ". %~dp0carbon.ps1"  

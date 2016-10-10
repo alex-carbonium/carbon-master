@@ -1,15 +1,23 @@
 ﻿param(    
-    [string] $Branch = "qa2",
+    [string] $Branch = "master",
     [string] $Configuration = "Release",
     [switch] $SkipInit = $false,
     [switch] $SkipPack = $false,
-    [switch] $SkipTest = $false
+    [switch] $SkipTest = $false,
+    [switch] $VcsUpdate = $true
 )
 
 $ErrorActionPreference = "Stop"
 
-remove-module helpers -ErrorAction SilentlyContinue
-import-module .\powershell\helpers.psm1
+.\tools\carbon.ps1 -StorageEmulator:$false
+
+if ($VcsUpdate)
+{
+    Initialize-Vcs $Branch    
+}
+
+remove-module helpers -ErrorAction Ignore
+import-module .\build\powershell\helpers.psm1
 get-environment -Name qa1 | Connect-Environment
 get-environment -Name qa2 | Connect-Environment
 
