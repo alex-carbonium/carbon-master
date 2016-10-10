@@ -8,6 +8,7 @@
 )
 
 $ErrorActionPreference = "Stop"
+gci env:
 
 .\tools\carbon.ps1 -StorageEmulator:$false
 
