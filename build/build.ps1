@@ -5,15 +5,12 @@
     [switch] $SkipPack = $false,
     [switch] $SkipTest = $false,
     [switch] $VcsUpdate = $true,
-    [hashtable] $Secrets = $null
+    [string] $test = $null
 )
 
 $ErrorActionPreference = "Stop"
 
-if ($Secrets)
-{
-    $Secrets.GetEnumerator() | % { [Environment]::SetEnvironmentVariable($_.Key, $_.Value, "Process")    
-}
+Write-host $test
 
 .\tools\carbon.ps1 -StorageEmulator:$false
 
