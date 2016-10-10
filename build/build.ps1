@@ -5,7 +5,7 @@
     [switch] $SkipPack = $false,
     [switch] $SkipTest = $false,
     [switch] $VcsUpdate = $true,
-    [hashtable] $Secrets = $true
+    [hashtable] $Secrets = $null
 )
 
 $ErrorActionPreference = "Stop"
