@@ -4,11 +4,16 @@
     [switch] $SkipInit = $false,
     [switch] $SkipPack = $false,
     [switch] $SkipTest = $false,
-    [switch] $VcsUpdate = $true
+    [switch] $VcsUpdate = $true,
+    [hashtable] $Secrets = $true
 )
 
 $ErrorActionPreference = "Stop"
-gci env:
+
+if ($Secrets)
+{
+    $Secrets.GetEnumerator() | % { [Environment]::SetEnvironmentVariable($_.Key, $_.Value, "Process")    
+}
 
 .\tools\carbon.ps1 -StorageEmulator:$false
 
