@@ -1,6 +1,10 @@
 function Initialize-Vcs{
     param(    
-        [string] $Branch,
+        [string] $Branch = "master",
+        [switch] $Server = $false,
+        [switch] $Core = $false,
+        [switch] $UI = $false,
+        [switch] $Secrets = $false,
         [switch] $Clean = $false
     )
 
@@ -8,36 +12,42 @@ function Initialize-Vcs{
 
     function Update($path, $remote, $b = $Branch, $clean = $true)
     {                            
-        Start-Job -ScriptBlock {
-            $path = $args[0]
-            $remote = $args[1]
-            $b = $args[2]
-            $clean = $args[3]
-            
-            if (-not (Test-Path $path))
-            {            
-                Write-host "Cloning branch $b in $path"
-                git clone $remote $path -b $b --single-branch -q
-            }
-            else
+        if (-not (Test-Path $path))
+        {            
+            Write-host "Cloning branch $b in $path"
+            git clone $remote $path -b $b --single-branch -q
+        }
+        else
+        {
+            Write-host "Updating $path to branch $b"
+            Set-Location $path
+            if ($clean)
             {
-                Write-host "Updating $path to branch $b"
-                Set-Location $path
-                if ($clean)
-                {
-                    git clean -f
-                }                
-                git checkout $b -q
-                git pull            
-            }
-        } -ArgumentList $path, $remote, $b, $clean
+                git clean -f
+            }                
+            git checkout $b -q
+            git pull            
+        }
     }
-
-    $user = $Env:GIT_USER
-    $password = $Env:GIT_PASSWORD
+    
     $jobs = @()
     
-    $jobs += Update "$env:InetRoot\carbon-secrets" "https://${user}:${password}@carbonproject.visualstudio.com/carbonium/_git/carbon-secrets" "master"
+    if ($Secrets)
+    {
+        $jobs += Update "$env:InetRoot\carbon-secrets" "https://carbonproject.visualstudio.com/carbonium/_git/carbon-secrets" "master"
+    }   
+    if ($Server)    
+    {
+        $jobs += Update "$env:InetRoot\carbon-server" "https://carbonproject.visualstudio.com/carbonium/_git/carbon-server"
+    }
+    if ($Core)    
+    {
+        $jobs += Update "$env:InetRoot\carbon-core" "https://carbonproject.visualstudio.com/carbonium/_git/carbon-core"
+    }   
+    if ($UI)    
+    {
+        $jobs += Update "$env:InetRoot\carbon-ui" "https://carbonproject.visualstudio.com/carbonium/_git/carbon-ui"
+    }  
     
     $jobs | % {$_ | Receive-job -Wait -AutoRemoveJob}
 }
