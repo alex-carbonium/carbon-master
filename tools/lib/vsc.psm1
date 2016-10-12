@@ -1,4 +1,4 @@
-function Initialize-Vcs{
+function Initialize-CarbonVcs{
     param(    
         [string] $Branch = "master",
         [switch] $Server = $false,
