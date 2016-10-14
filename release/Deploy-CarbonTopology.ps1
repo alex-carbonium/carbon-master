@@ -19,7 +19,7 @@ function DeployResourceGroup($group, $location, $templateFile, $paramFile)
         $g
     }
 
-    Write-Host "Creating deployment..."
+    Write-Host "Deploying group $groupName..."
     return New-AzureRmResourceGroupDeployment -ResourceGroupName $groupName -TemplateFile $templateFile -TemplateParameterFile $paramFile -Name $groupName
 }
 
@@ -82,7 +82,14 @@ function Run()
         {
             Write-Error "Unknown environment $envName"
             continue
-        }                   
+        }                
+        if (-not $env.connection)
+        {
+            Write-Warning "Nothing to deploy for environment $envName"
+            continue
+        }   
+
+        $templateRoot = "$env:InetRoot\carbon-server\Carbon.Deployment\Templates"
 
         foreach ($group in $env.groups)
         {

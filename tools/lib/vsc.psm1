@@ -52,22 +52,29 @@ function Initialize-CarbonVcs{
     $jobs | % {$_ | Receive-job -Wait -AutoRemoveJob}
 }
 
-function Sync-Vcs {
+function Sync-CarbonVcs {
     
     param(    
-        [string] $Branch = "default"
-    )
-
-    $ErrorActionPreference = "Stop"
+        [string] $CommitMessage = $null
+    )    
 
     $jobs = @()
+    $paths = gci "$env:InetRoot" -Directory -Filter carbon-* | Select -ExpandProperty "FullName"
+    $paths += "$env:InetRoot"
 
-    "$env:InetRoot\carbon-server","$env:InetRoot\carbon-ui","$env:InetRoot" | % {    
+    $paths | % {    
         $jobs += Start-Job -ScriptBlock { 
             Set-Location $args[0]
-            hg pull --rebase
-            hg push
-        } -ArgumentList ($_),$b
+            $CommitMessage = $args[1]
+            
+            if ($CommitMessage)
+            {
+                git commit -m $CommitMessage -a
+            }            
+            
+            git pull --rebase
+            git push origin
+        } -ArgumentList ($_),$CommitMessage
     }
 
     $jobs | Receive-job -Wait -AutoRemoveJob
