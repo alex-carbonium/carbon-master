@@ -202,9 +202,9 @@ if (-not $UseExistingClusterConnection)
     }
 }
 
-$RegKey = "HKLM:\SOFTWARE\Microsoft\Service Fabric SDK"
-$ModuleFolderPath = (Get-ItemProperty -Path $RegKey -Name FabricSDKPSModulePath).FabricSDKPSModulePath
-Import-Module "$ModuleFolderPath\ServiceFabricSDK.psm1"
+#$RegKey = "HKLM:\SOFTWARE\Microsoft\Service Fabric SDK"
+#$ModuleFolderPath = (Get-ItemProperty -Path $RegKey -Name FabricSDKPSModulePath).FabricSDKPSModulePath
+#Import-Module "$ModuleFolderPath\ServiceFabricSDK.psm1"
 
 ### <extension>
 Remove-Module CarbonExtensions -ErrorAction Ignore

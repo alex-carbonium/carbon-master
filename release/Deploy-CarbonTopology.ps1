@@ -89,7 +89,7 @@ function Run()
             continue
         }   
 
-        $templateRoot = "$env:InetRoot\carbon-server\Carbon.Deployment\Templates"
+        $templateRoot = "$env:InetRoot\carbon-server\target\Templates"
 
         foreach ($group in $env.groups)
         {

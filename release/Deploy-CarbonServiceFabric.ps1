@@ -57,7 +57,7 @@ function Deploy($env, $fabric)
             Connect-ServiceFabricCluster
         }        
 
-        .\Deploy-FabricApplication.ps1 -PublishProfileFile "Env:InetRoot\carbon-server\PublishProfiles\$($fabric.profile)" `
+        .\Deploy-FabricApplication.ps1 -PublishProfileFile "$Env:InetRoot\carbon-server\target\PublishProfiles\$($fabric.profile)" `
             -UseExistingClusterConnection            `
             -ApplicationPackagePath "$Env:InetRoot\carbon-server\target" `
             -Configuration $Configuration `
@@ -81,7 +81,7 @@ function Run()
   
     foreach ($envName in $Environments)
     {
-        $env = Get-CarbonEnvironment -Name $env
+        $env = Get-CarbonEnvironment -Name $envName
         if (-not $env)
         {
             Write-Error "Unknown environment $envName"

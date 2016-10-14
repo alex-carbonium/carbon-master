@@ -1,6 +1,6 @@
 # This script operates on artifacts only, must be started from the root
 param(    
-    [string] $Environment = "QA",
+    [string] $Environment = "Local",
     [string] $Configuration = "Release"
 )
 
