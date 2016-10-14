@@ -15,9 +15,9 @@ function Connect-CarbonEnvironment()
 {
     process
     {        
-        Add-AzureRmAccount -ServicePrincipal -ApplicationId $env.connection.appId -CertificateThumbprint $env.connection.thumbprint -TenantId $env.connection.tenantId | Out-Null
-        Set-AzureRmContext -SubscriptionId $env.connection.subscriptionId | Out-Null
-        Write-Host "Connected to $($env.name) $($env.owner)"    
+        Add-AzureRmAccount -ServicePrincipal -ApplicationId $_.connection.appId -CertificateThumbprint $_.connection.thumbprint -TenantId $_.connection.tenantId | Out-Null
+        Set-AzureRmContext -SubscriptionId $_.connection.subscriptionId | Out-Null
+        Write-Host "Connected to $($_.name) $($_.owner)"    
     }    
 }
 

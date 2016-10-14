@@ -41,8 +41,7 @@ function Run()
     
     $envs = Get-CarbonEnvironment | where {$_.needsVault}
 
-    $vaultPrefix = "carbon-vault"
-    SyncInitialSecrets $vaultPrefix
+    $vaultPrefix = "carbon-vault"    
 
     $groupName = "carbon-initial"    
 
@@ -73,7 +72,7 @@ function Run()
                 $k = Get-AzureKeyVaultSecret -VaultName $vaultName -Name $cert.fileName -ErrorAction Ignore
                 if ($k -eq $null)
                 {
-                    $secretsPath = Join-Path "$Env:InetRoot\carbon-secrets\azure"
+                    $secretsPath = "$Env:InetRoot\carbon-secrets\azure"
                     $certPath = join-path $secretsPath "$($cert.fileName).pfx"
                     Push-Location .\ServiceFabricRPHelpers
                     import-module .\ServiceFabricRPHelpers.psm1
@@ -103,6 +102,8 @@ function Run()
             }                                                        
         }
     } 
+
+    SyncInitialSecrets $vaultPrefix
 
     Write-Host "Run service-fabric-aad to grant access to service fabric explorer"
     Write-Host ".\SetupApplications.ps1 -TenantId '690ec069-8200-4068-9d01-5aaf188e557a' -ClusterName 'mycluster' -WebApplicationReplyUrl 'https://mycluster.westus.cloudapp.azure.com:19080/Explorer/index.html'"
