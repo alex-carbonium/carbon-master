@@ -1,20 +1,20 @@
 ﻿param(
-    [string] $TopologyPath = (Join-Path $PSScriptRoot '..\..\carbon-secrets\topology.json')
 )
 
 $ErrorActionPreference = "Stop"
 
-function SyncInitialSecrets($vaultPrefix, $topology)
-{
+function SyncInitialSecrets($vaultPrefix)
+{    
     Write-Host "Searching for secret values..."    
-    $envs = $topology.environments | where {$_.needsVault}
+    $topology = Get-CarbonTopology
+    $envs = Get-CarbonEnvironment | where {$_.needsVault}
     $values = @{}
     foreach ($secret in $topology.initialSecrets)
     {
         $values.Add($secret, "")
         foreach ($env in $envs)
         {
-            Connect-Environment $env
+            $env | Connect-CarbonEnvironment
             $vaultName = "$vaultPrefix-$($env.name)"
             $v = Get-AzureKeyVaultSecret -VaultName $vaultName -Name $secret -ErrorAction Ignore
             if ($v)
@@ -36,20 +36,19 @@ function SyncInitialSecrets($vaultPrefix, $topology)
 
 function Run()
 {
-    Remove-Module helpers -ErrorAction Ignore
-    Import-Module .\helpers.psm1
-
-    $topology = ConvertFrom-Json (Get-Content $TopologyPath -Raw)
-    $envs = $topology.environments | where {$_.needsVault}
+    Remove-Module Environment -ErrorAction Ignore
+    Import-Module $Env:InetRoot\release\Environment.psm1
+    
+    $envs = Get-CarbonEnvironment | where {$_.needsVault}
 
     $vaultPrefix = "carbon-vault"
-    SyncInitialSecrets $vaultPrefix $topology $envs
+    SyncInitialSecrets $vaultPrefix
 
     $groupName = "carbon-initial"    
 
     foreach ($env in $envs)
     {    
-        Connect-Environment $env
+        $env | Connect-CarbonEnvironment
 
         $vaultName = "$vaultPrefix-$($env.name)"    
     
@@ -74,7 +73,7 @@ function Run()
                 $k = Get-AzureKeyVaultSecret -VaultName $vaultName -Name $cert.fileName -ErrorAction Ignore
                 if ($k -eq $null)
                 {
-                    $secretsPath = Join-Path $PSScriptRoot '..\..\carbon-secrets\'
+                    $secretsPath = Join-Path "$Env:InetRoot\carbon-secrets\azure"
                     $certPath = join-path $secretsPath "$($cert.fileName).pfx"
                     Push-Location .\ServiceFabricRPHelpers
                     import-module .\ServiceFabricRPHelpers.psm1
