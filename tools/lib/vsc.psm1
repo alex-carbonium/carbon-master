@@ -15,7 +15,7 @@ function Initialize-CarbonVcs{
         if (-not (Test-Path $path))
         {            
             Write-host "Cloning branch $b in $path"
-            git clone $remote $path -b $b --single-branch -q
+            git clone $remote $path -b $b
         }
         else
         {
@@ -25,8 +25,8 @@ function Initialize-CarbonVcs{
             {
                 git clean -f
             }                
-            git checkout $b -q
-            git pull            
+            git pull                                  
+            git checkout $b          
         }
     }
     
@@ -34,7 +34,7 @@ function Initialize-CarbonVcs{
     
     if ($Secrets)
     {
-        $jobs += Update "$env:InetRoot\carbon-secrets" "https://carbonproject.visualstudio.com/carbonium/_git/carbon-secrets" "master"
+        $jobs += Update "$env:InetRoot\carbon-secrets" "https://carbonproject.visualstudio.com/carbonium/_git/carbon-secrets"
     }   
     if ($Server)    
     {
