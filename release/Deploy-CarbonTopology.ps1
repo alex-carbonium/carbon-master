@@ -1,7 +1,5 @@
 ﻿param(    
-    [string[]] $Environments = "local",
-
-    [string] $TopologyPath = (Join-Path $PSScriptRoot '..\..\carbon-secrets\topology.json'),
+    [string[]] $Environments = "local",    
 
     [Switch] $ForceUpdateSecrets = $false 
 )
@@ -21,7 +19,7 @@ function DeployResourceGroup($group, $location, $templateFile, $paramFile)
         $g
     }
 
-    Write-Host "Creating deployment..."
+    Write-Host "Deploying group $groupName..."
     return New-AzureRmResourceGroupDeployment -ResourceGroupName $groupName -TemplateFile $templateFile -TemplateParameterFile $paramFile -Name $groupName
 }
 
@@ -72,29 +70,30 @@ Connection Timeout=30;" -replace '\r\n',''
         }
     }
 
-    Update-CarbonSecrets ($topology.environments | where {$_.needsVault}) "carbon-vault" $values $ForceUpdateSecrets
+    Update-CarbonSecrets (Get-CarbonEnvironment | where {$_.needsVault}) "carbon-vault" $values $ForceUpdateSecrets
 }
 
 function Run()
-{
-    Remove-Module helpers -ErrorAction Ignore    
-    Import-Module .\helpers.psm1        
-
-    $templateRoot = '..\..\carbon-server\Carbon.Deployment\Templates'
-    $topology = ConvertFrom-Json (Get-Content $TopologyPath -Raw)
-
+{        
     foreach ($envName in $Environments)
     {
-        $env = $topology.environments | where {$_.name -eq $envName}
+        $env = Get-CarbonEnvironment -Name $envName
         if ($env -eq $null)
         {
             Write-Error "Unknown environment $envName"
             continue
-        }                   
+        }                
+        if (-not $env.connection)
+        {
+            Write-Warning "Nothing to deploy for environment $envName"
+            continue
+        }   
+
+        $templateRoot = "$env:InetRoot\carbon-server\target\Templates"
 
         foreach ($group in $env.groups)
         {
-            Connect-Environment $env #exporting secrets can reconnect
+            $env | Connect-CarbonEnvironment #exporting secrets can reconnect
 
             $templateFile = (Join-Path $templateRoot $group.templateFile)        
             $paramFile = (Join-Path $templateRoot $group.paramFile)

@@ -12,12 +12,6 @@ function Start-StorageEmulator {
     Receive-Job $job -WriteJobInResults -Wait | Out-Null
 }
 
-
-function Start-Carbon {
-    Set-Location $env:InetRoot\build
-    npm start
-}
-
 function Edit-CarbonTools {
     code $env:InetRoot\tools
 }

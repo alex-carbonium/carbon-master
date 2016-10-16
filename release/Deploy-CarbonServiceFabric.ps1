@@ -1,9 +1,5 @@
 param(    
-    [string[]] $Environments = "local",
-
-    [string] $TopologyPath = '..\..\carbon-secrets\topology.json',
-
-    [switch] $Build = $false,
+    [string[]] $Environments = "local",        
 
     [string] $Configuration = "Release",
 
@@ -24,21 +20,18 @@ function Deploy($env, $fabric)
 {
     try
     {
-        $versionFile = Resolve-Path ..\version.json
-        Push-Location ..\..\carbon-server\Carbon.Fabric\Scripts
-
         $appParams = @{}
 
         if ($fabric.requiredSecrets)
         {
-            Connect-Environment $env
+            $env | Connect-CarbonEnvironment
 
             $cert = $fabric.certificates | where {$_.type -eq "Encrypt"} | select -First 1
             foreach ($secret in $fabric.requiredSecrets)
             {
                 $vaultKey = "$($secret.name)-$($secret.environment)"                
                 $s = Get-AzureKeyVaultSecret -VaultName "carbon-vault-$($env.name)" -Name $vaultKey
-                $encrypted = Invoke-ServiceFabricEncryptText -CertStore -CertThumbprint $cert.thumbprint -Text $s.SecretValueText -StoreLocation LocalMachine -StoreName My
+                $encrypted = Invoke-ServiceFabricEncryptText -CertStore  -CertThumbprint $cert.thumbprint -Text $s.SecretValueText -StoreLocation LocalMachine -StoreName My
                 $appParams.Add($secret.parameter, $encrypted)
             }
         }
@@ -64,9 +57,9 @@ function Deploy($env, $fabric)
             Connect-ServiceFabricCluster
         }        
 
-        .\Deploy-FabricApplication.ps1 -PublishProfileFile "..\PublishProfiles\$($fabric.profile)" `
+        .\Deploy-FabricApplication.ps1 -PublishProfileFile "$Env:InetRoot\carbon-server\target\PublishProfiles\$($fabric.profile)" `
             -UseExistingClusterConnection            `
-            -ApplicationPackagePath "..\pkg\$Configuration\" `
+            -ApplicationPackagePath "$Env:InetRoot\carbon-server\target" `
             -Configuration $Configuration `
             -ApplicationParameter $appParams `
             -UnregisterUnusedApplicationVersionsAfterUpgrade $true `
@@ -83,29 +76,13 @@ function Deploy($env, $fabric)
 }
 
 function Run()
-{
-    Remove-Module helpers -ErrorAction Ignore
-    Import-Module .\helpers.psm1
-
-    if ($Build)
-    {
-        Write-Host "Packaging project..."        
-
-        .\Copy-App
-
-        $msbuild = Invoke-MsBuild -Path ..\..\carbon-server\Carbon.Fabric\Carbon.Fabric.sfproj -MsBuildParameters "/target:Package /property:Platform=x64;Configuration=$Configuration"    
-        if ($msbuild.BuildSucceeded -ne $true)
-        {
-            throw "Build failed"
-        }        
-    }   
-    
-    $topology = ConvertFrom-Json (Get-Content $TopologyPath -Raw)
-
+{             
+    . "$PSScriptRoot\ServiceFabricSDK\ServiceFabricSDK.ps1"
+  
     foreach ($envName in $Environments)
     {
-        $env = $topology.environments | where {$_.name -eq $envName}
-        if ($env -eq $null)
+        $env = Get-CarbonEnvironment -Name $envName
+        if (-not $env)
         {
             Write-Error "Unknown environment $envName"
             continue
@@ -121,7 +98,7 @@ function Run()
 
 try
 {
-    Push-Location $PSScriptRoot
+    Push-Location $PSScriptRoot    
     Run
 }
 finally
