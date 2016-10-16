@@ -1,5 +1,5 @@
 param(
-    [switch] $StorageEmulator = $false
+    [switch] $Initial = $false
 )
 
 Write-Host "Setting up carbon environment..."
@@ -16,10 +16,10 @@ foreach($module in $modules) {
 
 Write-Host "Done" -ForegroundColor Green
 
-if ($StorageEmulator){
-    Start-StorageEmulator
+if ($Initial){
+    Start-StorageEmulator    
+    Install-Module -Scope CurrentUser CredentialManager
 }
-Install-Module CredentialManager
 
 Reset-CarbonRoot
 
