@@ -19,6 +19,8 @@ Write-Host "Done" -ForegroundColor Green
 if ($StorageEmulator){
     Start-StorageEmulator
 }
+Install-Module CredentialManager
+
 Reset-CarbonRoot
 
 New-Alias -Name root -Value Reset-CarbonRoot -Scope Local -Force
