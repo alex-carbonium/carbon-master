@@ -16,7 +16,7 @@ try
 
     if (-not $SkipInit)
     {
-        npm install
+        npm install --loglevel=error
     }
 
     .\Copy-CarbonApp.ps1 -SourceMaps:($Configuration -eq "Debug")        
