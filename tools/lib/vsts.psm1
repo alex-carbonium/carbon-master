@@ -36,10 +36,12 @@ function New-CarbonBuild($buildName, $branch)
 
 function New-CarbonRelease()
 {
-    $ui = Get-CarbonLastSuccessfulBuild "carbon-ui"
-    $server = Get-CarbonLastSuccessfulBuild "carbon-server"
-    $master = Get-CarbonLastSuccessfulBuild "carbon-master"
-    $secrets = Get-CarbonLastSuccessfulBuild "carbon-secrets"
+    $ui = Get-CarbonLastSuccessfulBuild "carbon-ui-qa"
+    $server = Get-CarbonLastSuccessfulBuild "carbon-server-qa"
+    $master = Get-CarbonLastSuccessfulBuild "carbon-master-qa"
+    $secrets = Get-CarbonLastSuccessfulBuild "carbon-secrets-qa"
+
+    write-host "Server version $($server.buildNumber), Client version $($ui.buildNumber)"
     
     $def = Invoke-CarbonBuildApi "/_apis/release/definitions?api-version=3.0-preview.1" -area "vsrm."   
     $r = Invoke-CarbonBuildApi "/_apis/release/releases/11?api-version=3.0-preview.1&`$top=1" -area "vsrm."

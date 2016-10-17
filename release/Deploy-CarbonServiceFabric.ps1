@@ -3,9 +3,7 @@ param(
 
     [string] $Configuration = "Release",
 
-    [switch] $ForceNew = $false,
-
-    [switch] $Bump = $false,
+    [switch] $ForceNew = $false,    
 
     [switch] $SourceMaps = $false,
 
@@ -15,6 +13,15 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+function UploadCdn()
+{
+    Get-CarbonEnvironment -Name "qa-1" | Connect-CarbonEnvironment 
+    $keys = Get-AzureRmStorageAccountKey -ResourceGroupName "carbon-common" -Name "carbonstatic"
+        
+    $params = @("./js/uploadAzureFolder.js", "--container", "app", "--folder", "$Env:InetRoot\carbon-ui\target", "--account", "carbonstatic", "--key", $keys[0].Value)
+    & "node" $params
+}
 
 function Deploy($env, $fabric)
 {
@@ -31,7 +38,7 @@ function Deploy($env, $fabric)
             {
                 $vaultKey = "$($secret.name)-$($secret.environment)"                
                 $s = Get-AzureKeyVaultSecret -VaultName "carbon-vault-$($env.name)" -Name $vaultKey
-                $encrypted = Invoke-ServiceFabricEncryptText -CertStore  -CertThumbprint $cert.thumbprint -Text $s.SecretValueText -StoreLocation LocalMachine -StoreName My
+                $encrypted = Invoke-ServiceFabricEncryptText -CertStore  -CertThumbprint $cert.thumbprint -Text $s.SecretValueText -StoreLocation CurrentUser -StoreName My
                 $appParams.Add($secret.parameter, $encrypted)
             }
         }
@@ -57,15 +64,18 @@ function Deploy($env, $fabric)
             Connect-ServiceFabricCluster
         }        
 
+        if ($env.name -ne 'Local')
+        {
+            UploadCdn
+        }        
+
         .\Deploy-FabricApplication.ps1 -PublishProfileFile "$Env:InetRoot\carbon-server\target\PublishProfiles\$($fabric.profile)" `
             -UseExistingClusterConnection            `
             -ApplicationPackagePath "$Env:InetRoot\carbon-server\target" `
             -Configuration $Configuration `
             -ApplicationParameter $appParams `
             -UnregisterUnusedApplicationVersionsAfterUpgrade $true `
-            -VersionFile $versionFile `
             -ForceNew $ForceNew `
-            -Bump $Bump `
             -ReplaceDevPort $ReplaceDevPort `
             -Upgrade $Upgrade
     }

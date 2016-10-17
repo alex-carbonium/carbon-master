@@ -95,16 +95,10 @@ Param
     $SecurityToken,
 
     [String]
-    $VersionFile,
-
-    [String]
     $Configuration = 'Debug',
 
     [Boolean]
     $ForceNew = $false,
-
-    [Boolean]
-    $Bump = $false,
 
     [Boolean]
     $ReplaceDevPort = $false,
@@ -207,11 +201,9 @@ if (-not $UseExistingClusterConnection)
 #Import-Module "$ModuleFolderPath\ServiceFabricSDK.psm1"
 
 ### <extension>
-Remove-Module CarbonExtensions -ErrorAction Ignore
-Import-Module (join-path $LocalFolder ".\CarbonExtensions.psm1") -WarningAction Ignore
 if ($ReplaceDevPort)
 {
-    Replace-CarbonDevPort $ApplicationPackagePath
+    .\Set-CarbonDevPort.ps1 $ApplicationPackagePath
 }
 ### </extension>
 
@@ -250,10 +242,9 @@ if ($IsUpgrade)
         Write-Host "Will try to upgrade application"
     }        
 }
-if ($versionFile)
-{        
-    Update-CarbonVersion $ApplicationPackagePath $VersionFile $Configuration $Bump
-}
+
+.\Set-CarbonVersion.ps1 $ApplicationPackagePath
+
 ### </extension>
 
 if ($IsUpgrade)

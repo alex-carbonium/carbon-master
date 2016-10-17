@@ -1,1 +1,1 @@
-powershell -NoExit -command ". %~dp0carbon.ps1"  
+powershell -NoExit -command ". %~dp0carbon.ps1" -Initial 

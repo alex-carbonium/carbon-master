@@ -186,7 +186,7 @@ function Publish-UpgradedServiceFabricApplication
     
         $applicationPackagePathInImageStore = $names.ApplicationTypeName
         Write-Host (Get-VstsLocString -Key SFSDK_CopyingAppToImageStore)
-        Copy-ServiceFabricApplicationPackage -ApplicationPackagePath $AppPkgPathToUse -ImageStoreConnectionString $imageStoreConnectionString -ApplicationPackagePathInImageStore $applicationPackagePathInImageStore
+        Copy-ServiceFabricApplicationPackage -ApplicationPackagePath $AppPkgPathToUse -ImageStoreConnectionString $imageStoreConnectionString -ApplicationPackagePathInImageStore $applicationPackagePathInImageStore -TimeoutSec 1200
         if(!$?)
         {
             throw (Get-VstsLocString -Key SFSDK_CopyingAppToImageStoreFailed)

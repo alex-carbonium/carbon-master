@@ -1,4 +1,4 @@
 .idea/*
-node_modules/*
+release/node_modules/*
 
 carbon-*/*
