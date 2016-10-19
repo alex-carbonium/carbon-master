@@ -28,6 +28,55 @@ function Get-CarbonLastSuccessfulBuild($buildName)
     return $build.value
 }
 
+function New-CarbonPullRequest($From, $To, 
+    [switch] $Master = $false,
+    [switch] $Server = $false,
+    [switch] $Core = $false,
+    [switch] $UI = $false,
+    [switch] $Secrets = $false)
+{
+    $def = Invoke-CarbonBuildApi "/_apis/git/repositories/?api-version=1.0"
+    
+    function Create($repoName)
+    {
+        $repoId = ($def.value | where {$_.name -eq $repoName}).id        
+        $r = Invoke-CarbonBuildApi "/_apis/git/repositories/$repoId/pullRequests?api-version=1.0"`
+            @{"sourceRefName" = $From; "targetRefName" = $To; "title" = "Merging $From into $To"}
+        Start-Process -FilePath "https://carbonproject.visualstudio.com/carbonium/_git/$repoName/pullrequest/$($r.pullRequestId)?_a=files"
+    }
+
+    if ($Master)
+    {
+        Create "carbon-master"
+    }
+    if ($Core)
+    {
+        Create "carbon-core"
+    }
+    if ($UI)
+    {
+        Create "carbon-ui"
+    }
+    if ($Server)
+    {
+        Create "carbon-server"
+    }
+    if ($Secrets)
+    {
+        Create "carbon-secrets"
+    }
+}
+
+function New-CarbonPullRequestQA(
+    [switch] $Master = $false,
+    [switch] $Server = $false,
+    [switch] $Core = $false,
+    [switch] $UI = $false,
+    [switch] $Secrets = $false)
+{
+    New-CarbonPullRequest -From 'refs/heads/master' -To 'refs/heads/releases/qa' -Master:$Master -Server:$Server -Core:$Core -UI:$UI -Secrets:$Secrets
+}
+
 function New-CarbonBuild($buildName, $branch)
 {
     $def = Invoke-CarbonBuildApi "/_apis/build/definitions?api-version=2.0&name=$buildName"
