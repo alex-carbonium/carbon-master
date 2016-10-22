@@ -27,14 +27,13 @@ foreach ($m in $manifests)
     $xml = [xml](Get-Content $m.FullName)
     $xml.ServiceManifest.Version = $manifestVersion
     $xml.ServiceManifest.CodePackage.Version = $serverVersion
-    if ($xml.ServiceManifest.ConfigPackage)
+    foreach ($dataPackage in $xml.ServiceManifest.DataPackage)
     {
-        $xml.ServiceManifest.ConfigPackage.Version = $serverVersion
-    }
-    if ($xml.ServiceManifest.DataPackage)
-    {
-        $xml.ServiceManifest.DataPackage.Version = $clientVersion
-    } 
+        if ($dataPackage.Name -eq 'Client')
+        {
+            $dataPackage.Version = $clientVersion
+        }
+    }     
     $xml.Save($m.FullName)
 }
     

@@ -4,7 +4,7 @@
 
 function Run()
 {    
-    $dataPackage = "$Env:InetRoot\carbon-server\target\Carbon.Services.FabricHostPkg\Data\app"
+    $dataPackage = "$Env:InetRoot\carbon-server\target\Carbon.Services.FabricHostPkg\Client"
     Remove-Item (Join-Path $dataPackage target) -Recurse -ErrorAction Ignore
     New-Item (Join-Path $dataPackage target) -ItemType Directory
 
