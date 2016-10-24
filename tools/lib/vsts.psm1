@@ -1,7 +1,5 @@
-﻿function Invoke-CarbonBuildApi($url, $data, $area = "")
+﻿function GetAuthHeaders()
 {
-    $base = "https://carbonproject.${area}visualstudio.com"
-    
     $cred = Get-StoredCredential -Target "git:https://carbonproject.visualstudio.com"
     if (-not $cred)
     {
@@ -10,22 +8,64 @@
     $nc = $cred.GetNetworkCredential()
     
     $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $nc.UserName, $nc.Password)))    
+    return @{Authorization=("Basic {0}" -f $auth)}
+}
+
+function Invoke-CarbonBuildApi($url, $data, $area = "", $method)
+{
+    $base = "https://carbonproject.${area}visualstudio.com"
+    $headers = GetAuthHeaders
+
+    $m = 'Get'
     if ($data)
     {
-        $response = Invoke-RestMethod -Method Post -Uri "$base/DefaultCollection/carbonium$url" -Body (ConvertTo-Json $data -Depth 100) -Headers @{Authorization=("Basic {0}" -f $auth)} -ContentType 'application/json'
+        $m = 'Post'
+    }        
+    if ($method)
+    {
+        $m = $method
+    }
+    
+    if ($data)
+    {        
+        $response = Invoke-RestMethod -Method $m -Uri "$base/DefaultCollection/carbonium$url" -Body (ConvertTo-Json $data -Depth 100) -Headers $headers -ContentType 'application/json'
     }
     else
     {
-        $response = Invoke-RestMethod -Method Get -Uri "$base/DefaultCollection/carbonium$url" -Headers @{Authorization=("Basic {0}" -f $auth)} -ContentType 'application/json'
+        $response = Invoke-RestMethod -Method $m -Uri "$base/DefaultCollection/carbonium$url" -Headers $headers -ContentType 'application/json'
     }    
     return $response
 }
 
-function Get-CarbonLastSuccessfulBuild($buildName)
+function Add-CarbonBuildTag($BuildId, $Tag)
+{
+    Invoke-CarbonBuildApi "/_apis/build/builds/$BuildId/tags/${Tag}?api-version=2.0" -method Put
+}
+
+function Get-CarbonLastSuccessfulBuild($buildName, $tag)
 {
     $def = Invoke-CarbonBuildApi "/_apis/build/definitions?api-version=2.0&name=$buildName"
-    $build = Invoke-CarbonBuildApi "/_apis/build/builds?definitions=$($def.value.id)&statusFilter=completed&resultFilter=succeeded&`$top=1"
+    $url = "/_apis/build/builds?definitions=$($def.value.id)&statusFilter=completed&resultFilter=succeeded&`$top=1"
+    if ($tag)
+    {
+        $url += "&tagFilters=$tag"
+    }    
+    $build = Invoke-CarbonBuildApi $url
     return $build.value
+}
+
+function Get-CarbonArtifact($buildId, $targetFolder)
+{
+    $artifacts = Invoke-CarbonBuildApi "/_apis/build/builds/$buildId/artifacts"
+    $url = $artifacts.value.resource.downloadUrl
+
+    $headers = GetAuthHeaders
+
+    $file = [System.IO.Path]::GetTempFileName()
+    Invoke-WebRequest -uri $url -OutFile $file -Headers $headers
+
+    Add-Type -assembly 'system.io.compression.filesystem'
+    [io.compression.zipfile]::ExtractToDirectory($file, $targetFolder)
 }
 
 function New-CarbonPullRequest($From, $To, 
