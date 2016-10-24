@@ -26,11 +26,26 @@
     ```PowerShell
     Initialize-CarbonModules [-Clean]
     ```
-8. Start development server (or just run npm run &lt;script&gt; in respective repo)
+8. Start development server (or just run npm run &lt;script&gt; in respective repo).
+   If you are working with the core product:
     ```PowerShell
     Start-Carbon
     ```
+    If you are working on UI only:
+    ```PowerShell
+    Get-CarbonLatestCore
+    Start-CarbonUI
+    ```
     
+9. Start the browser and go to:
+   ```PowerShell
+   http://localhost:8080/app?serverless
+   ```
+   If you want to connect to existing QA server, open:
+   ```PowerShell
+   http://localhost:8080/app?backend=qa
+   ```    
+        
 # Working with VSC
 ### Create local branches using
 ```PowerShell
