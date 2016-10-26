@@ -3,30 +3,43 @@
 
 # Getting started
 
+## Download prerequisites
+- Latest [git](https://git-scm.com/downloads) version
+- Latest [PowerShell](https://www.microsoft.com/en-us/download/details.aspx?id=50395)
+- Git [Credentials Manager](https://github.com/Microsoft/Git-Credential-Manager-for-Windows/releases/tag/v1.7.0)
+- Install Credentials Manager in PowerShell
+```PowerShell
+Install-Module -Scope CurrentUser CredentialManager
+```
+
+## (Optional) Create credentials
+```PowerShell
+New-StoredCredential -Target git:https://carbonproject.visualstudio.com -UserName Token -Password <Your token> -Type Generic -Persist LocalMachine
+```
+
+## Clone and run
 1. Log in with your Live ID
-2. Go to [Security](https://carbonproject.visualstudio.com/_details/security/tokens) and set up personal access token
-(or Alternate authentication credentials, does not matter)
-3. Clone master project
+2. Clone master project
     ```cmd
     git clone https://carbonproject.visualstudio.com/carbonium/_git/carbon-master
     ```
-4. Go to repository
+3. Go to repository
     ```
     cd carbon-master
     ```
-5. Initialize enlistment
+4. Initialize enlistment
     ```cmd
     .\tools\carbon.cmd
     ```
-6. Clone repositories you need
+5. Clone repositories you need
     ```PowerShell
     Initialize-CarbonVcs [-Core] [-UI] [-Server] [-Secrets]
     ```
-7. Set up all dependencies (npm install and nuget restore)
+6. Set up all dependencies (npm install and nuget restore)
     ```PowerShell
     Initialize-CarbonModules [-Clean]
     ```
-8. Start development server (or just run npm run &lt;script&gt; in respective repo).
+7. Start development server (or just run npm run &lt;script&gt; in respective repo).
    If you are working with the core product:
     ```PowerShell
     Start-Carbon
@@ -37,7 +50,7 @@
     Start-CarbonUI
     ```
     
-9. Start the browser and go to:
+8. Start the browser and go to:
    ```PowerShell
    http://localhost:8080/app?serverless
    ```
