@@ -1,5 +1,5 @@
 # Deployment URLS:
-1. Latest dev build: http://carbon-qa2.westeurope.cloudapp.azure.com
+1. Latest dev build: http://dev.carbonium.io
 
 # Getting started
 
