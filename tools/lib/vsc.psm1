@@ -98,11 +98,11 @@ function Sync-CarbonVcs {
             
             if ($CommitMessage)
             {
-                git commit -m $CommitMessage -a
+                git commit -m $CommitMessage -a -q
             }            
             $branch = git rev-parse --abbrev-ref HEAD
-            git pull --rebase
-            git push --set-upstream origin $branch
+            git pull --rebase -q
+            git push --set-upstream origin $branch -q
         } -ArgumentList ($_),$CommitMessage
     }
 
@@ -125,8 +125,8 @@ function New-CarbonBranch {
     Get-CarbonRepositories -Master:$Master -Core:$Core -Server:$Server -UI:$UI -Secrets:$Secrets | % {    
         $jobs += Start-Job -ScriptBlock { 
             Set-Location $args[0]
-            git branch $args[1]
-            git checkout $args[1]
+            git branch $args[1] -q
+            git checkout $args[1] -q
         } -ArgumentList ($_),$Name
     }
 
