@@ -15,5 +15,6 @@
         "**/node_modules": true
     },
 
-    "editor.trimAutoWhitespace": true
+    "editor.trimAutoWhitespace": true,
+    "files.trimTrailingWhitespace": true
 }
