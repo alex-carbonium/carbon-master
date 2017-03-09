@@ -49,7 +49,7 @@ New-StoredCredential -Target git:https://carbonproject.visualstudio.com -UserNam
     Get-CarbonLatestCore
     Start-CarbonUI
     ```
-    
+
 8. Start the browser and go to:
    ```PowerShell
    http://localhost:8080/app?serverless
@@ -57,8 +57,33 @@ New-StoredCredential -Target git:https://carbonproject.visualstudio.com -UserNam
    If you want to connect to existing QA server, open:
    ```PowerShell
    http://localhost:8080/app?backend=qa
-   ```    
-        
+   ```
+
+## Run core tests
+### Run tests from VSCode
+```VSCode
+>Run test task
+```
+
+### Run core examples from VSCode
+```VSCode
+>Run task
+core examples
+```
+
+### Run tests from command line
+```PowerShell
+cd carbon-core
+npm test -- --watch
+```
+
+### Run tests once in PhantomJS
+```PowerShell
+cd carbon-core
+npm test
+```
+This is what the build does, the results are in the .trx file
+
 # Working with VSC
 ### Create local branches using
 ```PowerShell
@@ -82,12 +107,12 @@ git push --set-upstream origin <current branch>
     New-CarbonPullRequestQA [-Core] [-UI] [-Server] [-Master] [-Secrets]
     ```
 2. Wait for builds to finish, watch Slack channel [#releases](https://project-panda.slack.com/messages/releases/)
-3. Note: If you changed BOTH carbon-core and carbon-ui, carbon-ui will be built TWICE. 
+3. Note: If you changed BOTH carbon-core and carbon-ui, carbon-ui will be built TWICE.
 This is because core artifacts are taken from carbon-ui build. Wait for both of them to finish.
 4. Launch the release:
     ```PowerShell
     New-CarbonRelease
-    ```      
+    ```
 5. Wait for release to finish, message will be posted to the same channel [#releases](https://project-panda.slack.com/messages/releases/)
 
 # Testing a release locally

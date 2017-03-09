@@ -2,19 +2,25 @@
     "version": "0.1.0",
     "command": "node",
     "isShellCommand": true,
-    "showOutput": "always",    
-    "suppressTaskName": true,    
-    "tasks": [        
+    "showOutput": "always",
+    "suppressTaskName": true,
+    "tasks": [
         {
             "taskName": "start ui",
             "args": ["./carbon-ui/scripts/watch.js"],
-            "isWatching": true,
+            "isBackground": true,
             "isBuildCommand": true
         },
         {
             "taskName": "core examples",
             "args": ["./carbon-core/scripts/watchCore.js", "--example"],
-            "isWatching": true
-        }        
+            "isBackground": true
+        },
+        {
+            "taskName": "test",
+            "args": ["./carbon-core/scripts/test.js", "--watch"],
+            "isBackground": true,
+            "isTestCommand": true
+        }
     ]
 }
