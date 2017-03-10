@@ -12,6 +12,12 @@
             "isBuildCommand": true
         },
         {
+            "taskName": "start ui (overwrite vendors)",
+            "args": ["./carbon-ui/scripts/watch.js", "--vendors"],
+            "isBackground": true,
+            "isBuildCommand": true
+        },
+        {
             "taskName": "core examples",
             "args": ["./carbon-core/scripts/watchCore.js", "--example"],
             "isBackground": true

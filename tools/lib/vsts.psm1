@@ -1,13 +1,22 @@
 ﻿function GetAuthHeaders()
 {
-    $cred = Get-StoredCredential -Target "git:https://carbonproject.visualstudio.com"
-    if (-not $cred)
+    $password = ""
+    if (Get-Command Get-StoredCredential -ErrorAction SilentlyContinue)
     {
-        throw "Could not find stored credential for git"
+        $cred = Get-StoredCredential -Target "git:https://carbonproject.visualstudio.com"
+        if (-not $cred)
+        {
+            throw "Could not find stored credential for git"
+        }
+        $nc = $cred.GetNetworkCredential()
+        $password = $nc.Password
     }
-    $nc = $cred.GetNetworkCredential()
-    
-    $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $nc.UserName, $nc.Password)))    
+    else
+    {
+        $password = security find-generic-password -a "Personal Access Token" -s gcm4ml:git:https://carbonproject.visualstudio.com -w
+    }
+
+    $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f "Personal Access Token", $password)))
     return @{Authorization=("Basic {0}" -f $auth)}
 }
 
@@ -20,20 +29,20 @@ function Invoke-CarbonBuildApi($url, $data, $area = "", $method)
     if ($data)
     {
         $m = 'Post'
-    }        
+    }
     if ($method)
     {
         $m = $method
     }
-    
+
     if ($data)
-    {        
+    {
         $response = Invoke-RestMethod -Method $m -Uri "$base/DefaultCollection/carbonium$url" -Body (ConvertTo-Json $data -Depth 100) -Headers $headers -ContentType 'application/json'
     }
     else
     {
         $response = Invoke-RestMethod -Method $m -Uri "$base/DefaultCollection/carbonium$url" -Headers $headers -ContentType 'application/json'
-    }    
+    }
     return $response
 }
 
@@ -49,7 +58,7 @@ function Get-CarbonLastSuccessfulBuild($buildName, $tag)
     if ($tag)
     {
         $url += "&tagFilters=$tag"
-    }    
+    }
     $build = Invoke-CarbonBuildApi $url
     return $build.value
 }
@@ -68,7 +77,7 @@ function Get-CarbonArtifact($buildId, $targetFolder)
     [io.compression.zipfile]::ExtractToDirectory($file, $targetFolder)
 }
 
-function New-CarbonPullRequest($From, $To, 
+function New-CarbonPullRequest($From, $To,
     [switch] $Master = $false,
     [switch] $Server = $false,
     [switch] $Core = $false,
@@ -76,13 +85,22 @@ function New-CarbonPullRequest($From, $To,
     [switch] $Secrets = $false)
 {
     $def = Invoke-CarbonBuildApi "/_apis/git/repositories/?api-version=1.0"
-    
+
     function Create($repoName)
     {
-        $repoId = ($def.value | where {$_.name -eq $repoName}).id        
+        $repoId = ($def.value | where {$_.name -eq $repoName}).id
         $r = Invoke-CarbonBuildApi "/_apis/git/repositories/$repoId/pullRequests?api-version=1.0"`
             @{"sourceRefName" = $From; "targetRefName" = $To; "title" = "Merging $From into $To"}
-        Start-Process -FilePath "https://carbonproject.visualstudio.com/carbonium/_git/$repoName/pullrequest/$($r.pullRequestId)?_a=files"
+
+        $url = "https://carbonproject.visualstudio.com/carbonium/_git/$repoName/pullrequest/$($r.pullRequestId)?_a=files"
+        if (Get-Command open -ErrorAction SilentlyContinue)
+        {
+            open $url
+        }
+        else
+        {
+            Start-Process -FilePath
+        }
     }
 
     if ($Master)
@@ -131,8 +149,8 @@ function New-CarbonRelease()
     $secrets = Get-CarbonLastSuccessfulBuild "carbon-secrets-qa"
 
     write-host "Server version $($server.buildNumber), Client version $($ui.buildNumber)"
-    
-    $def = Invoke-CarbonBuildApi "/_apis/release/definitions?api-version=3.0-preview.1" -area "vsrm."   
+
+    $def = Invoke-CarbonBuildApi "/_apis/release/definitions?api-version=3.0-preview.1" -area "vsrm."
     $r = Invoke-CarbonBuildApi "/_apis/release/releases/11?api-version=3.0-preview.1&`$top=1" -area "vsrm."
     return Invoke-CarbonBuildApi "/_apis/release/releases?api-version=3.0-preview.1" @{definitionId = $def.value.id; artifacts = @(`
         @{alias = "carbon-ui"; instanceReference = @{id = "$($ui.id)"}},`
@@ -141,5 +159,5 @@ function New-CarbonRelease()
         @{alias = "carbon-secrets"; instanceReference = @{id = "$($secrets.id)"}}`
         )} `
         "vsrm."
-    
+
 }
