@@ -3,16 +3,18 @@
     "javascript.validate.enable": false,
     "eslint.enable": false,
     "jshint.enable": false,
-    
+
     "search.exclude": {
         "**/node_modules": true,
-        "**/target/": true     
+        "**/target/": true,
+        "carbon-server/": true
     },
     "files.exclude": {
         "**/.git": true,
         "**/.idea": true,
         "**/.DS_Store": true,
-        "**/node_modules": true
+        "**/node_modules": true,
+        "carbon-server/": true
     },
 
     "editor.trimAutoWhitespace": true,
