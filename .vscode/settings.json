@@ -3,6 +3,8 @@
     "typescript.tsdk": "./carbon-ui/node_modules/typescript/lib",
     "typescript.validate.enable": true,
 
+    "javascript.validate.enable": false,
+
     "eslint.enable": false,
     "jshint.enable": false,
 
