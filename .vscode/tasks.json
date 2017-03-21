@@ -7,24 +7,52 @@
     "tasks": [
         {
             "taskName": "start ui",
-            "args": ["./carbon-ui/scripts/watch.js"],
+            "args": [
+                "./carbon-ui/scripts/watch.js"
+            ],
             "isBackground": true,
-            "isBuildCommand": true
+            "isBuildCommand": true,
+            "problemMatcher": {
+                "owner": "webpack",
+                "severity": "error",
+                "fileLocation": "absolute",
+                "pattern": [
+                    {
+                        "regexp": "ERROR in (.*)",
+                        "file": 1
+                    },
+                    {
+                        "regexp": "\\((\\d+),(\\d+)\\):(.*)",
+                        "line": 1,
+                        "column": 2,
+                        "message": 3
+                    }
+                ]
+            }
         },
         {
             "taskName": "start ui (overwrite vendors)",
-            "args": ["./carbon-ui/scripts/watch.js", "--vendors"],
+            "args": [
+                "./carbon-ui/scripts/watch.js",
+                "--vendors"
+            ],
             "isBackground": true,
             "isBuildCommand": true
         },
         {
             "taskName": "core examples",
-            "args": ["./carbon-core/scripts/watchCore.js", "--example"],
+            "args": [
+                "./carbon-core/scripts/watchCore.js",
+                "--example"
+            ],
             "isBackground": true
         },
         {
             "taskName": "test",
-            "args": ["./carbon-core/scripts/test.js", "--watch"],
+            "args": [
+                "./carbon-core/scripts/test.js",
+                "--watch"
+            ],
             "isBackground": true,
             "isTestCommand": true
         }

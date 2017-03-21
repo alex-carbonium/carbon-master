@@ -1,6 +1,7 @@
 // Place your settings in this file to overwrite default and user settings.
 {
     "typescript.tsdk": "./carbon-ui/node_modules/typescript/lib",
+    "typescript.validate.enable": true,
 
     "eslint.enable": false,
     "jshint.enable": false,
