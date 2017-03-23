@@ -2,19 +2,68 @@
     "version": "0.1.0",
     "command": "node",
     "isShellCommand": true,
-    "showOutput": "always",    
-    "suppressTaskName": true,    
-    "tasks": [        
+    "showOutput": "always",
+    "suppressTaskName": true,
+    "tasks": [
         {
-            "taskName": "start ui",
-            "args": ["./carbon-ui/scripts/watch.js"],
-            "isWatching": true,
-            "isBuildCommand": true
+            "taskName": "start core and ui",
+            "args": [
+                "./scripts/watchAll.js"
+            ],
+            "isBackground": true,
+            "isBuildCommand": true,
+            "problemMatcher": {
+                "owner": "webpack",
+                "severity": "error",
+                "fileLocation": "absolute",
+                "pattern": [
+                    {
+                        "regexp": "ERROR in (.*)",
+                        "file": 1
+                    },
+                    {
+                        "regexp": "\\((\\d+),(\\d+)\\):(.*)",
+                        "line": 1,
+                        "column": 2,
+                        "message": 3
+                    }
+                ]
+            }
         },
         {
             "taskName": "core examples",
-            "args": ["./carbon-core/scripts/watchCore.js", "--example"],
-            "isWatching": true
-        }        
+            "args": [
+                "./carbon-core/scripts/watchCore.js",
+                "--example",
+                "--port",
+                "8081"
+            ],
+            "isBackground": true
+        },
+        {
+            "taskName": "pack debug core",
+            "args": [
+                "./carbon-core/scripts/packCore.js",
+                "--sourceMaps",
+                "--noUglify",
+                "--copyToUi"
+            ]
+        },
+        {
+            "taskName": "start ui",
+            "args": [
+                "./carbon-ui/scripts/watch.js"
+            ],
+            "isBackground": true
+        },
+        {
+            "taskName": "test",
+            "args": [
+                "./carbon-core/scripts/test.js",
+                "--watch"
+            ],
+            "isBackground": true,
+            "isTestCommand": true
+        }
     ]
 }

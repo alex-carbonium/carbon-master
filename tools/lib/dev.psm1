@@ -14,7 +14,7 @@ function Get-CarbonLatestCore()
 
 function Start-CarbonUI{
     Set-Location $env:InetRoot\carbon-ui\
-    npm run watch-ui
+    npm run start
 }
 
 function Initialize-CarbonModules{
