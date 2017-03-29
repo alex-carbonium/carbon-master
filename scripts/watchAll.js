@@ -1,8 +1,8 @@
 var cp = require("child_process");
 var path = require("path");
 
-spawnAndPipe("core: ", "npm", ["start"], fullPath("../carbon-core"));
-spawnAndPipe("ui: ", "npm", ["start", "--", "--linkCore"], fullPath("../carbon-ui"));
+spawnAndPipe("core: ", "npm.cmd", ["start"], fullPath("../carbon-core"));
+spawnAndPipe("ui: ", "npm.cmd", ["start", "--", "--linkCore"], fullPath("../carbon-ui"));
 
 function spawnAndPipe(prefix, program, args, cwd){
     var childProcess = cp.spawn(program, args, {
