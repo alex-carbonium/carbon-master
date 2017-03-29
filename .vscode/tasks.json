@@ -18,7 +18,7 @@
                     "watching": {
                         "activeOnStart": true,
                         "beginsPattern": "ui: webpack: Compiling\\.\\.\\.",
-                        "endsPattern": "ui: webpack: Failed to compile\\.|ui: webpack: bundle is not VALID"
+                        "endsPattern": "ui: webpack: Failed to compile\\.|ui: webpack: bundle is"
                     },
                     "severity": "error",
                     "fileLocation": "absolute",
@@ -37,7 +37,7 @@
                     "watching": {
                         "activeOnStart": true,
                         "beginsPattern": "core: webpack: Compiling\\.\\.\\.",
-                        "endsPattern": "core: webpack: Failed to compile\\.|core: webpack: bundle is not VALID"
+                        "endsPattern": "core: webpack: Failed to compile\\.|core: webpack: bundle is"
                     },
                     "severity": "error",
                     "fileLocation": "absolute",
