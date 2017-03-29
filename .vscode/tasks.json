@@ -12,20 +12,46 @@
             ],
             "isBackground": true,
             "isBuildCommand": true,
-            "problemMatcher": {
-                "owner": "webpack",
-                "severity": "error",
-                "fileLocation": "absolute",
-                "pattern": [
-                    {
-                        "regexp": "(.*?)\\((\\d+),(\\d+)\\):\\serror\\s(.*)",
-                        "file": 1,
-                        "line": 2,
-                        "column": 3,
-                        "message": 4
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "webpack-ui",
+                    "watching": {
+                        "activeOnStart": true,
+                        "beginsPattern": "ui: webpack: Compiling\\.\\.\\.",
+                        "endsPattern": "ui: webpack: Failed to compile\\.|ui: webpack: bundle is not VALID"
+                    },
+                    "severity": "error",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "(.*?carbon\\-ui.*?)\\((\\d+),(\\d+)\\):\\serror\\s(.*)",
+                            "file": 1,
+                            "line": 2,
+                            "column": 3,
+                            "message": 4
+                        }
+                    ]
+                },
+                {
+                    "owner": "webpack-core",
+                    "watching": {
+                        "activeOnStart": true,
+                        "beginsPattern": "core: webpack: Compiling\\.\\.\\.",
+                        "endsPattern": "core: webpack: Failed to compile\\.|core: webpack: bundle is not VALID"
+                    },
+                    "severity": "error",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "(.*?carbon\\-core.*?)\\((\\d+),(\\d+)\\):\\serror\\s(.*)",
+                            "file": 1,
+                            "line": 2,
+                            "column": 3,
+                            "message": 4
+                        }
+                    ]
+                }
+            ]
         },
         {
             "taskName": "core examples",
