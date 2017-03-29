@@ -18,14 +18,11 @@
                 "fileLocation": "absolute",
                 "pattern": [
                     {
-                        "regexp": "ERROR in (.*)",
-                        "file": 1
-                    },
-                    {
-                        "regexp": "\\((\\d+),(\\d+)\\):(.*)",
-                        "line": 1,
-                        "column": 2,
-                        "message": 3
+                        "regexp": "(.*?)\\((\\d+),(\\d+)\\):\\serror\\s(.*)",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "message": 4
                     }
                 ]
             }
