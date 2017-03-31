@@ -17,18 +17,21 @@
                     "owner": "webpack-ui",
                     "watching": {
                         "activeOnStart": true,
-                        "beginsPattern": "ui: webpack: Compiling\\.\\.\\.",
-                        "endsPattern": "ui: webpack: Failed to compile\\.|ui: webpack: bundle is"
+                        "beginsPattern": "\\[ui\\] Checking started in a separate process",
+                        "endsPattern": "ui: webpack: Failed to compile\\.|ui: webpack: bundle is|ui: webpack: Compiled"
                     },
                     "severity": "error",
-                    "fileLocation": "absolute",
+                    "fileLocation": ["relative", "${workspaceRoot}/carbon-ui"],
                     "pattern": [
                         {
-                            "regexp": "(.*?carbon\\-ui.*?)\\((\\d+),(\\d+)\\):\\serror\\s(.*)",
+                            "regexp": "\\[ui\\]\\s(.*?):(\\d+):(\\d+)",
                             "file": 1,
                             "line": 2,
-                            "column": 3,
-                            "message": 4
+                            "column": 3
+                        },
+                        {
+                            "regexp": "\\s+(.*)",
+                            "message": 1
                         }
                     ]
                 },
@@ -36,18 +39,21 @@
                     "owner": "webpack-core",
                     "watching": {
                         "activeOnStart": true,
-                        "beginsPattern": "core: webpack: Compiling\\.\\.\\.",
-                        "endsPattern": "core: webpack: Failed to compile\\.|core: webpack: bundle is"
+                        "beginsPattern": "\\[core\\] Checking started in a separate process",
+                        "endsPattern": "core: webpack: Failed to compile\\.|core: webpack: bundle is|core: webpack: Compiled"
                     },
                     "severity": "error",
-                    "fileLocation": "absolute",
+                    "fileLocation": ["relative", "${workspaceRoot}/carbon-core"],
                     "pattern": [
                         {
-                            "regexp": "(.*?carbon\\-core.*?)\\((\\d+),(\\d+)\\):\\serror\\s(.*)",
+                            "regexp": "\\[core\\]\\s(.*?):(\\d+):(\\d+)",
                             "file": 1,
                             "line": 2,
-                            "column": 3,
-                            "message": 4
+                            "column": 3
+                        },
+                        {
+                            "regexp": "\\s+(.*)",
+                            "message": 1
                         }
                     ]
                 }

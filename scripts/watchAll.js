@@ -15,11 +15,27 @@ function spawnAndPipe(prefix, program, args, cwd){
     });
 
     childProcess.stdout.on("data", function(data){
-        process.stdout.write(prefix + data.toString());
+        writeLines(process.stdout, data, prefix);
     });
     childProcess.stderr.on("data", function(data){
-        process.stderr.write(prefix + data.toString());
+        writeLines(process.stderr, data, prefix);
     });
+}
+
+function writeLines(stream, data, prefix){
+    var lines = data.toString().split("\n");
+    for (var i = 0; i < lines.length; ++i){
+        var line = lines[i];
+        if (line.length === 0){
+            continue;
+        }
+        if (!line.startsWith(" ") && !line.startsWith("ERROR")){
+            stream.write(prefix + line + "\n");
+        }
+        else{
+            stream.write(line + "\n");
+        }
+    }
 }
 
 function watchFolder(source, target, filePattern){
