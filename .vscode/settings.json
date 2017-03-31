@@ -5,6 +5,8 @@
 
     "javascript.validate.enable": false,
 
+    "less.validate": false,
+
     "search.exclude": {
         "**/node_modules": true,
         "**/target/": true,
