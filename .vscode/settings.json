@@ -8,14 +8,16 @@
     "search.exclude": {
         "**/node_modules": true,
         "**/target/": true,
-        "carbon-server/": true
+        "carbon-server/": true,
+        "carbon-ui/target/": true
     },
     "files.exclude": {
         "**/.git": true,
         "**/.idea": true,
         "**/.DS_Store": true,
         "**/node_modules": true,
-        "carbon-server/": true
+        "carbon-server/": true,
+        "carbon-ui/target/": true
     },
 
     "editor.trimAutoWhitespace": true,
