@@ -10,11 +10,13 @@
     "search.exclude": {
         "**/node_modules": true,
         "**/target/": true,
+        "**/*.orig": true,
         "carbon-server/": true,
         "carbon-ui/target/": true
     },
     "files.exclude": {
         "**/.git": true,
+        "**/*.orig": true,
         "**/.idea": true,
         "**/.DS_Store": true,
         "**/node_modules": true,
