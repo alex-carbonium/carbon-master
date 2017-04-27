@@ -99,7 +99,7 @@ function New-CarbonPullRequest($From, $To,
         }
         else
         {
-            Start-Process -FilePath
+            Start-Process -FilePath $url
         }
     }
 
@@ -150,7 +150,7 @@ function New-CarbonRelease()
 
     write-host "Server version $($server.buildNumber), Client version $($ui.buildNumber)"
 
-    $def = Invoke-CarbonBuildApi "/_apis/release/definitions?api-version=3.0-preview.1" -area "vsrm."    
+    $def = Invoke-CarbonBuildApi "/_apis/release/definitions?api-version=3.0-preview.1" -area "vsrm."
     return Invoke-CarbonBuildApi "/_apis/release/releases?api-version=3.0-preview.1" @{definitionId = $def.value.id; artifacts = @(`
         @{alias = "carbon-ui"; instanceReference = @{id = "$($ui.id)"}},`
         @{alias = "carbon-server"; instanceReference = @{id = "$($server.id)"}},`
