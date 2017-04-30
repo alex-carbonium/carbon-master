@@ -21,7 +21,10 @@
                         "endsPattern": "ui: webpack: Failed to compile\\.|ui: webpack: bundle is|ui: webpack: Compiled"
                     },
                     "severity": "error",
-                    "fileLocation": ["relative", "${workspaceRoot}/carbon-ui"],
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/carbon-ui"
+                    ],
                     "pattern": [
                         {
                             "regexp": "\\[ui\\]\\s(.*?):(\\d+):(\\d+)",
@@ -43,7 +46,10 @@
                         "endsPattern": "core: webpack: Failed to compile\\.|core: webpack: bundle is|core: webpack: Compiled"
                     },
                     "severity": "error",
-                    "fileLocation": ["relative", "${workspaceRoot}/carbon-core"],
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/carbon-core"
+                    ],
                     "pattern": [
                         {
                             "regexp": "\\[core\\]\\s(.*?):(\\d+):(\\d+)",
@@ -93,6 +99,20 @@
             ],
             "isBackground": true,
             "isTestCommand": true
+        },
+        {
+            "taskName": "test ui",
+            "args": [
+                "./carbon-ui/scripts/test.js",
+                "--watch"
+            ],
+            "isBackground": true,
+            "showOutput": "always",
+            "isShellCommand": true,
+            "isTestCommand": true,
+            "options": {
+                "cwd": "${workspaceRoot}/carbon-ui"
+            }
         }
     ]
 }
