@@ -75,6 +75,13 @@ Connection Timeout=30;" -replace '\r\n',''
 
 function Run()
 {
+    $topology = Get-CarbonTopology
+    if (-not $topology.dirty)
+    {
+        Write-Host "Topology deployment skipped"
+        return
+    }
+
     foreach ($envName in $Environments)
     {
         $env = Get-CarbonEnvironment -Name $envName

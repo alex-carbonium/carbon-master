@@ -82,7 +82,8 @@ function New-CarbonPullRequest($From, $To,
     [switch] $Server = $false,
     [switch] $Core = $false,
     [switch] $UI = $false,
-    [switch] $Secrets = $false)
+    [switch] $Secrets = $false,
+    [switch] $Functions = $false)
 {
     $def = Invoke-CarbonBuildApi "/_apis/git/repositories/?api-version=1.0"
 
@@ -123,6 +124,10 @@ function New-CarbonPullRequest($From, $To,
     {
         Create "carbon-secrets"
     }
+    if ($Functions)
+    {
+        Create "carbon-functions"
+    }
 }
 
 function New-CarbonPullRequestQA(
@@ -130,9 +135,10 @@ function New-CarbonPullRequestQA(
     [switch] $Server = $false,
     [switch] $Core = $false,
     [switch] $UI = $false,
-    [switch] $Secrets = $false)
+    [switch] $Secrets = $false,
+    [switch] $Functions = $false)
 {
-    New-CarbonPullRequest -From 'refs/heads/master' -To 'refs/heads/releases/qa' -Master:$Master -Server:$Server -Core:$Core -UI:$UI -Secrets:$Secrets
+    New-CarbonPullRequest -From 'refs/heads/master' -To 'refs/heads/releases/qa' -Master:$Master -Server:$Server -Core:$Core -UI:$UI -Secrets:$Secrets -Functions:$Fuctions
 }
 
 function New-CarbonBuild($buildName, $branch)
