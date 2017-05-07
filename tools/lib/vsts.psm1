@@ -83,7 +83,8 @@ function New-CarbonPullRequest($From, $To,
     [switch] $Core = $false,
     [switch] $UI = $false,
     [switch] $Secrets = $false,
-    [switch] $Functions = $false)
+    [switch] $Functions = $false,
+    [switch] $Approve = $false)
 {
     $def = Invoke-CarbonBuildApi "/_apis/git/repositories/?api-version=1.0"
 
@@ -91,17 +92,27 @@ function New-CarbonPullRequest($From, $To,
     {
         $repoId = ($def.value | where {$_.name -eq $repoName}).id
         $r = Invoke-CarbonBuildApi "/_apis/git/repositories/$repoId/pullRequests?api-version=1.0"`
-            @{"sourceRefName" = $From; "targetRefName" = $To; "title" = "Merging $From into $To"}
+            @{"sourceRefName" = "refs/heads/$From"; "targetRefName" = "refs/heads/$To"; "title" = "Merging $From into $To"}
 
-        $url = "https://carbonproject.visualstudio.com/carbonium/_git/$repoName/pullrequest/$($r.pullRequestId)?_a=files"
-        if (Get-Command open -ErrorAction SilentlyContinue)
+        if ($Approve)
         {
-            open $url
+            $r = Invoke-CarbonBuildApi "/_apis/git/repositories/$repoId/pullRequests/$($r.pullRequestId)?api-version=3.0"`
+                @{"status" = "completed"; "lastMergeSourceCommit" = @{ commitId = $r.lastMergeSourceCommit.commitId}; completionOptions = @{ "deleteSourceBranch" = "false"; squashMerge = "false" } }`
+                -method Patch
+            Write-Host "Pull request $($r.pullRequestId) is approved"
         }
         else
         {
-            Start-Process -FilePath $url
-        }
+            $url = "https://carbonproject.visualstudio.com/carbonium/_git/$repoName/pullrequest/$($r.pullRequestId)?_a=files"
+            if (Get-Command open -ErrorAction SilentlyContinue)
+            {
+                open $url
+            }
+            else
+            {
+                Start-Process -FilePath $url
+            }
+        }        
     }
 
     if ($Master)
@@ -136,9 +147,10 @@ function New-CarbonPullRequestQA(
     [switch] $Core = $false,
     [switch] $UI = $false,
     [switch] $Secrets = $false,
-    [switch] $Functions = $false)
+    [switch] $Functions = $false,
+    [switch] $Approve = $false)
 {
-    New-CarbonPullRequest -From 'refs/heads/master' -To 'refs/heads/releases/qa' -Master:$Master -Server:$Server -Core:$Core -UI:$UI -Secrets:$Secrets -Functions:$Fuctions
+    New-CarbonPullRequest -From 'master' -To 'releases/qa' -Master:$Master -Server:$Server -Core:$Core -UI:$UI -Secrets:$Secrets -Functions:$Fuctions -Approve:$Approve
 }
 
 function New-CarbonBuild($buildName, $branch)
