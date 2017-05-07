@@ -11,6 +11,7 @@
         "**/node_modules": true,
         "**/target/": true,
         "**/*.orig": true,
+        "carbon-functions/": true,
         "carbon-server/": true,
         "carbon-ui/target/": true
     },
@@ -20,6 +21,7 @@
         "**/.idea": true,
         "**/.DS_Store": true,
         "**/node_modules": true,
+        "carbon-functions/": true,
         "carbon-server/": true,
         "carbon-ui/target/": true
     },
