@@ -11,6 +11,7 @@
         "**/node_modules": true,
         "**/target/": true,
         "**/*.orig": true,
+        "**/.awcache/": true,
         "carbon-functions/": true,
         "carbon-server/": true,
         "carbon-ui/target/": true
@@ -20,6 +21,7 @@
         "**/*.orig": true,
         "**/.idea": true,
         "**/.DS_Store": true,
+        "**/.awcache/": true,
         "**/node_modules": true,
         "carbon-functions/": true,
         "carbon-server/": true,
