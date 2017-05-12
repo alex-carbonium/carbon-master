@@ -18,6 +18,35 @@ function Start-CarbonUI{
     npm run start
 }
 
+function Build-CarbonServer
+{
+    param(
+        [string] $Configuration = "Debug"
+    )
+    try
+    {
+        Push-Location $env:InetRoot\carbon-server
+        $msbuild = "${env:ProgramFiles(x86)}\MSBuild\14.0\Bin\MSBuild.exe"
+
+        $params = @(".\CarbonServer.sln", "/p:Configuration=$Configuration;Platform=x64", "/v:m")
+        & $msbuild $params
+        if ($LASTEXITCODE -ne 0)
+        {
+            throw "Build failed";
+        }
+    }
+    finally
+    {
+        Pop-Location
+    }
+}
+
+function Start-CarbonServer
+{
+    Set-Location $env:InetRoot\carbon-server\Carbon.Console\bin\x64\debug\
+    .\Carbon.Console.exe
+}
+
 function Initialize-CarbonModules{
     param(
         [Switch] $Clean = $false
@@ -55,17 +84,34 @@ function Initialize-CarbonModules{
     }
 }
 
-function Enable-CarbonSsl
+function Enable-CarbonPorts
 {
     function EnablePort($port)
     {
-        $params = @("http", "add", "urlacl", "url=https://+:$port/", "user=Everyone")
+        $params = @("http", "add", "urlacl", "url=http://+:$port/", "user=Everyone")
         & netsh $params
 
-        $params = @("http", "add", "sslcert", "ipport=0.0.0.0:$port", "certhash=3C6C98A08678F2BEDFD558B24F4122AF12D1097B", "appid={00000000-0000-0000-0000-000000000000}")
-        & netsh $params
+        # $params = @("http", "add", "urlacl", "url=https://+:$port/", "user=Everyone")
+        # & netsh $params
+
+        # $params = @("http", "add", "sslcert", "ipport=0.0.0.0:$port", "certhash=3C6C98A08678F2BEDFD558B24F4122AF12D1097B", "appid={00000000-0000-0000-0000-000000000000}")
+        # & netsh $params
     }
 
     EnablePort 9000
     EnablePort 9100
+}
+
+function Clear-CarbonCache
+{
+    if (Test-Path $Env:InetRoot\carbon-core\.awcache)
+    {
+        Remove-Item -Path $Env:InetRoot\carbon-core\.awcache -Recurse
+        Write-Host "Deleted $Env:InetRoot\carbon-core\.awcache"
+    }
+    if (Test-Path $Env:InetRoot\carbon-ui\.awcache)
+    {
+        Remove-Item -Path $Env:InetRoot\carbon-ui\.awcache -Recurse
+        Write-Host "Deleted $Env:InetRoot\carbon-ui\.awcache"
+    }
 }

@@ -5,19 +5,19 @@ param(
 Write-Host "Setting up carbon environment..."
 
 $env:InetRoot = [System.IO.Path]::GetFullPath("$PSScriptRoot\..")
-$modules = Get-ChildItem -Path "$env:InetRoot\tools\Lib" -Filter *.psm1 
-$modules += Get-ChildItem -Path "$env:InetRoot\release" -Filter *.psm1 
+$modules = Get-ChildItem -Path "$env:InetRoot\tools\Lib" -Filter *.psm1
+$modules += Get-ChildItem -Path "$env:InetRoot\release" -Filter *.psm1
 
 foreach($module in $modules) {
     $moduleName = [System.IO.Path]::GetFileNameWithoutExtension($module.Name)
     Remove-Module $moduleName  -ErrorAction Ignore
-    Import-Module $module.FullName
+    Import-Module $module.FullName -WarningAction Ignore
 }
 
 Write-Host "Done" -ForegroundColor Green
 
 if ($Initial){
-    Start-StorageEmulator    
+    Start-StorageEmulator
     Install-Module -Scope CurrentUser CredentialManager
 }
 
