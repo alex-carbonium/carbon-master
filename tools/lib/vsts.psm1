@@ -20,6 +20,18 @@
     return @{Authorization=("Basic {0}" -f $auth)}
 }
 
+function OpenBrowser($Url)
+{
+    if (Get-Command open -ErrorAction SilentlyContinue)
+    {
+        open $Url
+    }
+    else
+    {
+        Start-Process -FilePath $Url
+    }
+}
+
 function Invoke-CarbonBuildApi($url, $data, $area = "", $method)
 {
     $base = "https://carbonproject.${area}visualstudio.com"
@@ -104,15 +116,8 @@ function New-CarbonPullRequest($From, $To,
         else
         {
             $url = "https://carbonproject.visualstudio.com/carbonium/_git/$repoName/pullrequest/$($r.pullRequestId)?_a=files"
-            if (Get-Command open -ErrorAction SilentlyContinue)
-            {
-                open $url
-            }
-            else
-            {
-                Start-Process -FilePath $url
-            }
-        }        
+            OpenBrowser -Url $url
+        }
     }
 
     if ($Master)
@@ -125,7 +130,11 @@ function New-CarbonPullRequest($From, $To,
     }
     if ($UI)
     {
-        Create "carbon-ui"
+        OpenBrowser -Url "https://github.com/CarbonDesigns/carbon-ui/compare/$To...$($From)?expand=1"
+        if ($Approve)
+        {
+            Write-Warning "github pull requests need to be approved manually"
+        }
     }
     if ($Server)
     {
@@ -156,7 +165,12 @@ function New-CarbonPullRequestQA(
 function New-CarbonBuild($buildName, $branch)
 {
     $def = Invoke-CarbonBuildApi "/_apis/build/definitions?api-version=2.0&name=$buildName"
-    return Invoke-CarbonBuildApi "/_apis/build/builds?api-version=2.0" @{definition = @{id = $def.value.id}; sourceBranch = $branch}
+    return Invoke-CarbonBuildApi "/_apis/build/builds?api-version=2.0" @{definition = @{id = $def.value.id}; sourceBranch = "refs/heads/$branch"}
+}
+
+function New-CarbonBuildClientQA()
+{
+    New-CarbonBuild -buildName "carbon-ui-qa" -branch "releases/qa"
 }
 
 function New-CarbonRelease()

@@ -3,16 +3,6 @@
     npm start
 }
 
-function Get-CarbonLatestCore()
-{
-    Remove-Item $env:InetRoot\carbon-ui\target\carbon-core-* -ErrorAction SilentlyContinue
-    Remove-Item $env:InetRoot\carbon-ui\target\carbon-api-* -ErrorAction SilentlyContinue
-    Remove-Item $env:InetRoot\carbon-ui\target\carbon-*.d.ts -ErrorAction SilentlyContinue
-    $build = Get-CarbonLastSuccessfulBuild 'carbon-core' 'refs/heads/master'
-    Get-CarbonArtifact $build.id $env:InetRoot\carbon-ui\
-    Write-Host "Got core bits from build $($build.id)"
-}
-
 function Start-CarbonUI{
     Set-Location $env:InetRoot\carbon-ui\
     npm run start

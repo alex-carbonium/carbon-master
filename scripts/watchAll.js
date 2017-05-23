@@ -6,7 +6,7 @@ var npm = process.platform === "win32" ? "npm.cmd" : "npm";
 
 spawnAndPipe("core: ", npm, ["start"], fullPath("../carbon-core"));
 spawnAndPipe("ui: ", npm, ["start", "--", "--linkCore"], fullPath("../carbon-ui"));
-watchFolder(fullPath("../carbon-core/mylibs/definitions"), fullPath("../carbon-ui/target"), /carbon\-.*ts$/gi);
+watchFolder(fullPath("../carbon-core/mylibs/definitions"), fullPath("../carbon-ui/node_modules/@carbonium/carbon-core/types"), /carbon\-.*ts$/gi);
 
 function spawnAndPipe(prefix, program, args, cwd){
     var childProcess = cp.spawn(program, args, {

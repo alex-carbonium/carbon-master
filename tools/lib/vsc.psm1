@@ -47,7 +47,7 @@ function Initialize-CarbonVcs{
     }
     if ($UI)
     {
-        $jobs += Update "$env:InetRoot\carbon-ui" "https://carbonproject.visualstudio.com/carbonium/_git/carbon-ui"
+        $jobs += Update "$env:InetRoot\carbon-ui" "https://github.com/CarbonDesigns/carbon-ui"
     }
     if ($Functions)
     {

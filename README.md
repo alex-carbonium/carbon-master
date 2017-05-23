@@ -44,11 +44,6 @@ New-StoredCredential -Target git:https://carbonproject.visualstudio.com -UserNam
     ```PowerShell
     Start-Carbon
     ```
-    If you are working on UI only:
-    ```PowerShell
-    Get-CarbonLatestCore
-    Start-CarbonUI
-    ```
 
 8. Start the browser and go to:
    ```PowerShell
