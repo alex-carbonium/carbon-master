@@ -12,7 +12,7 @@ require("./deployAzureCdn")(
     {
         serviceOptions: [argv.account, argv.key],
         containerName: argv.container,
-        folder: path.relative(path.dirname(folder), folder),
+        //folder: path.relative(path.dirname(folder), folder),
         zip: true
     },
     files,

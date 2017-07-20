@@ -29,5 +29,6 @@
     },
 
     "editor.trimAutoWhitespace": true,
+    "editor.autoIndent": true,
     "files.trimTrailingWhitespace": true
 }

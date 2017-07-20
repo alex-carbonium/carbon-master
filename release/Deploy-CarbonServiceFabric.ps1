@@ -19,7 +19,13 @@ function UploadCdn()
     Get-CarbonEnvironment -Name "qa-1" | Connect-CarbonEnvironment
     $keys = Get-AzureRmStorageAccountKey -ResourceGroupName "carbon-common" -Name "carbonstatic"
 
-    $params = @("./js/uploadAzureFolder.js", "--container", "app", "--folder", "$Env:InetRoot\carbon-ui\target", "--account", "carbonstatic", "--key", $keys[0].Value)
+    $params = @("./js/uploadAzureFolder.js", "--container", "resources", "--folder", "$Env:InetRoot\carbon-ui\target\resources", "--account", "carbonstatic", "--key", $keys[0].Value)
+    & "node" $params
+
+    #remove resources since they are already uploaded to a different container
+    Remove-Item -r "$Env:InetRoot\carbon-ui\target\resources\"
+
+    $params = @("./js/uploadAzureFolder.js", "--container", "target", "--folder", "$Env:InetRoot\carbon-ui\target", "--account", "carbonstatic", "--key", $keys[0].Value)
     & "node" $params
 }
 
