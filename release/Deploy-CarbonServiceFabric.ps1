@@ -14,19 +14,24 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function UploadFolder($Container, $Folder, $AccountKeys)
+{
+    $params = @("./js/uploadAzureFolder.js", "--container", $Container, "--folder", $Folder, "--account", "carbonstatic", "--key", $AccountKeys[0].Value)
+    & "node" $params
+}
+
 function UploadCdn()
 {
     Get-CarbonEnvironment -Name "qa-1" | Connect-CarbonEnvironment
     $keys = Get-AzureRmStorageAccountKey -ResourceGroupName "carbon-common" -Name "carbonstatic"
 
-    $params = @("./js/uploadAzureFolder.js", "--container", "resources", "--folder", "$Env:InetRoot\carbon-ui\target\resources", "--account", "carbonstatic", "--key", $keys[0].Value)
-    & "node" $params
+    UploadFolder -Container "fonts" -Folder "$Env:InetRoot\carbon-ui\fonts" -AccountKeys $keys
 
+    UploadFolder -Container "resources" -Folder "$Env:InetRoot\carbon-ui\target\resources" -AccountKeys $keys
     #remove resources since they are already uploaded to a different container
     Remove-Item -r "$Env:InetRoot\carbon-ui\target\resources\"
 
-    $params = @("./js/uploadAzureFolder.js", "--container", "target", "--folder", "$Env:InetRoot\carbon-ui\target", "--account", "carbonstatic", "--key", $keys[0].Value)
-    & "node" $params
+    UploadFolder -Container "target" -Folder "$Env:InetRoot\carbon-ui\target" -AccountKeys $keys
 }
 
 function Deploy($env, $fabric)
