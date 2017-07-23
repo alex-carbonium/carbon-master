@@ -25,10 +25,10 @@ function UploadCdn()
     Get-CarbonEnvironment -Name "qa-1" | Connect-CarbonEnvironment
     $keys = Get-AzureRmStorageAccountKey -ResourceGroupName "carbon-common" -Name "carbonstatic"
 
-    UploadFolder -Container "fonts" -Folder "$Env:InetRoot\carbon-ui\fonts" -AccountKeys $keys
+    UploadFolder -Container "fonts" -Folder "$Env:InetRoot\carbon-ui\target\fonts" -AccountKeys $keys
+    Remove-Item -r "$Env:InetRoot\carbon-ui\target\fonts\"
 
     UploadFolder -Container "resources" -Folder "$Env:InetRoot\carbon-ui\target\resources" -AccountKeys $keys
-    #remove resources since they are already uploaded to a different container
     Remove-Item -r "$Env:InetRoot\carbon-ui\target\resources\"
 
     UploadFolder -Container "target" -Folder "$Env:InetRoot\carbon-ui\target" -AccountKeys $keys
