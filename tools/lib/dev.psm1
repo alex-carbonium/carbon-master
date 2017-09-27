@@ -33,8 +33,8 @@ function Build-CarbonServer
 
 function Start-CarbonServer
 {
-    Set-Location $env:InetRoot\carbon-server\Carbon.Console\bin\x64\debug\
-    .\Carbon.Console.exe
+    $path = "$env:InetRoot\carbon-server\Carbon.Console\bin\x64\debug"
+    start-process cmd "/c cd $path && .\Carbon.Console.exe"
 }
 
 function Initialize-CarbonModules{

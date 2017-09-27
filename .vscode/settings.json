@@ -15,7 +15,8 @@
         "**/.awcache/": true,
         "carbon-functions/": true,
         "carbon-server/": true,
-        "carbon-ui/target/": true
+        "carbon-ui/target/": true,
+        "tmp/": true
     },
     "files.exclude": {
         "**/.git": true,
@@ -26,7 +27,8 @@
         "**/node_modules": true,
         "carbon-functions/": true,
         "carbon-server/": true,
-        "carbon-ui/target/": true
+        "carbon-ui/target/": true,
+        "tmp/": true
     },
 
     "editor.trimAutoWhitespace": true,
