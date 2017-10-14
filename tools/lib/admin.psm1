@@ -72,6 +72,7 @@ function Test-CarbonProjectLog
         $p += @('-f', $Filter)
     }
     Clear-Host
+    Write-Host "Running with params $p"
     RunTools $p
 }
 
