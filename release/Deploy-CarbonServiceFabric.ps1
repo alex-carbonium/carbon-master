@@ -14,9 +14,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-function UploadFolder($Container, $Folder, $AccountKeys)
+function UploadFolder($Container, $Folder, $AccountKeys, [switch] $ForceZip = $false)
 {
-    $params = @("./js/uploadAzureFolder.js", "--container", $Container, "--folder", $Folder, "--account", "carbonstatic", "--key", $AccountKeys[0].Value)
+    $params = @("./js/uploadAzureFolder.js", "--container", $Container, "--folder", $Folder, "--account", "carbonstatic", "--key", $AccountKeys[0].Value, "--forceZip", $ForceZip)
     & "node" $params
 }
 
@@ -33,6 +33,12 @@ function UploadCdn()
 
     UploadFolder -Container "resources" -Folder "$Env:InetRoot\carbon-ui\target\resources" -AccountKeys $keys
     Remove-Item -r "$Env:InetRoot\carbon-ui\target\resources\"
+
+    $sourceMapsDir = "$Env:InetRoot\carbon-ui\target\sourcemaps"
+    mkdir $sourceMapsDir -ErrorAction Ignore
+    Copy-Item "$Env:InetRoot\carbon-ui\target\*.js.map" $sourceMapsDir
+    UploadFolder -Container "sourcemaps" -Folder "$sourceMapsDir" -AccountKeys $keys -ForceZip
+    Remove-Item -r "$sourceMapsDir"
 
     UploadFolder -Container "target" -Folder "$Env:InetRoot\carbon-ui\target" -AccountKeys $keys
 }
