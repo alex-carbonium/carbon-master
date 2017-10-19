@@ -33,3 +33,8 @@ Before calling API, an access token needs to be obtained and stored in the curre
     ```PowerShell
     Test-CarbonProjectLog -companyId b6f693890f0447bd8c88fa09fcbd34a0 -modelId 46 -Filter b676d62e8488591d59e02a25f6fb29ee
     ```
+
+- When the Model.json file is ready, it can be imported to the account of the current user.
+    ```PowerShell
+    Import-CarbonProject -companyId b6f693890f0447bd8c88fa09fcbd34a0 -modelId 46
+    ```

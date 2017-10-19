@@ -13,6 +13,7 @@ function New-CarbonProxySession(
 
     [IO.Swagger.Client.Configuration]::Default.ApiClient.RestClient.BaseUrl = "$url/api"
     [IO.Swagger.Client.Configuration]::Default.DefaultHeader["Authorization"] = "Bearer $($cred.Password)"
+    [IO.Swagger.Client.Configuration]::Default.Timeout = [int]::MaxValue
 
     Write-Host "Token obtained for $($cred.UserName)"
 }
@@ -74,6 +75,34 @@ function Test-CarbonProjectLog
     Clear-Host
     Write-Host "Running with params $p"
     RunTools $p
+}
+
+function Import-CarbonProject
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $CompanyId,
+        [Parameter(Mandatory=$true)]
+        [string] $ModelId
+    )
+
+    $outDir = Join-Path (Get-CarbonTmpProjectsFolder) "$($CompanyId)_$($ModelId)"
+    $modelFile = Join-Path $outDir "Model.json"
+    if (!(Test-Path $modelFile))
+    {
+        throw "Model file $modelFile does not exist"
+    }
+
+    $api = New-Object -TypeName IO.Swagger.Api.AdminApi -ArgumentList @($null)
+    $stream = [IO.File]::OpenRead($modelFile)
+    try
+    {
+        $api.ProjectFromJson($stream)
+    }
+    finally
+    {
+        $stream.Dispose()
+    }
 }
 
 function Initialize-CarbonProxy([switch] $Force = $false)
