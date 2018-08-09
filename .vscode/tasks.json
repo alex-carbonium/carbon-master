@@ -68,11 +68,11 @@
         {
             "taskName": "core examples",
             "args": [
-                "./carbon-core/scripts/watchCore.js",
-                "--example",
-                "--port",
-                "8081"
+                "${workspaceRoot}/carbon-core/scripts/watchExamples.js"
             ],
+            "options": {
+                "cwd": "${workspaceRoot}/carbon-core"
+            },
             "isBackground": true
         },
         {
@@ -92,11 +92,14 @@
             "isBackground": true
         },
         {
-            "taskName": "test",
+            "taskName": "test core",
+            "command": "npm",
             "args": [
-                "./carbon-core/scripts/test.js",
-                "--watch"
+                "test"
             ],
+            "options": {
+                "cwd": "${workspaceRoot}/carbon-core"
+            },
             "isBackground": true,
             "isTestCommand": true
         },
