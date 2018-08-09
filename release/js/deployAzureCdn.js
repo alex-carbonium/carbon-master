@@ -56,7 +56,7 @@ function uploadFileToAzureCdn(blobService, options, loggerCallback, destFileName
     return deferred.promise;
 }
 
-function chooseSmallerFileAndModifyContentType(compressedFile, originalFile, metadata) {
+function chooseSmallerFileAndModifyContentType(options, compressedFile, originalFile, metadata) {
     var deferred = Q.defer();
     fs.stat(compressedFile, function (err, compressedStats) {
         if (err) {
@@ -68,7 +68,7 @@ function chooseSmallerFileAndModifyContentType(compressedFile, originalFile, met
                 deferred.reject(err);
                 return;
             }
-            if (originalStats.size < compressedStats.size) {
+            if (originalStats.size < compressedStats.size && !options.forceZip) {
                 // don't upload compressed if it becomes bigger
                 deferred.resolve({
                     zippedTmpFile: compressedFile,
@@ -135,6 +135,7 @@ module.exports = function deploy(opt, files, loggerCallback, cb) {
         folder: '', // path within container
         concurrentUploadThreads: 10, // number of concurrent uploads, choose best for your network condition
         zip: false, // gzip files if they become smaller after zipping, content-encoding header will change if file is zipped
+        forceZip: false, //forces zipping to simplify reading in less important scenarios
         metadata: {cacheControl: 'public, max-age=315569260'}, // metadata for each uploaded file
         testRun: false // test run - means no blobs will be actually deleted or uploaded, see log messages for details
     }, opt);
@@ -173,7 +174,7 @@ module.exports = function deploy(opt, files, loggerCallback, cb) {
                 createFolderAndClearPromise.then(function () {
                     return gzipFile(sourceFile)
                 }).then(function (tmpFile) {
-                    return chooseSmallerFileAndModifyContentType(tmpFile, sourceFile, metadata);
+                    return chooseSmallerFileAndModifyContentType(options, tmpFile, sourceFile, metadata);
                 }).then(function (res) {
                     return uploadFileToAzureCdn(blobService, options, loggerCallback, destFileName, res.fileToUpload, res.updatedMetadata)
                         .finally(function () {

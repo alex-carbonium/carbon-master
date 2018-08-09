@@ -1,5 +1,5 @@
 # This script operates on artifacts only, must be started from the root
-param(    
+param(
     [string] $Environment = "Local",
     [string] $Configuration = "Release",
     [switch] $SkipInit = $false,
@@ -19,13 +19,13 @@ try
         npm install --loglevel=error
     }
 
-    .\Copy-CarbonApp.ps1 -SourceMaps:($Configuration -eq "Debug")        
+    .\Copy-CarbonApp.ps1 -All:($Configuration -eq "Debug")
 
     $envs = ""
     switch ($Environment)
     {
-        'QA' { $envs = "qa-1","qa-2" }    
-        'Local' { $envs = "local" }    
+        'QA' { $envs = "qa-1","qa-2" }
+        'Local' { $envs = "local" }
     }
 
     if ($envs)
@@ -36,7 +36,7 @@ try
         if (-not $SkipTopology)
         {
             .\Deploy-CarbonTopology.ps1 -Environments $envs
-        }        
+        }
         .\Deploy-CarbonServiceFabric.ps1 -Environments $envs -Configuration $Configuration -Upgrade -ReplaceDevPort
     }
 }
