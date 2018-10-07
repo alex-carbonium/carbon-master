@@ -24,7 +24,7 @@ try
     $envs = ""
     switch ($Environment)
     {
-        'QA' { $envs = "qa-1","qa-2" }
+        'QA' { $envs = "qa-3","qa-2" }
         'Local' { $envs = "local" }
     }
 

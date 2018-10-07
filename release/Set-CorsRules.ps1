@@ -1,6 +1,6 @@
-﻿Get-CarbonEnvironment -Name 'qa-1' | Connect-CarbonEnvironment
+﻿Get-CarbonEnvironment -Name 'qa-3' | Connect-CarbonEnvironment
 
-$StorageAccountName = 'carbonstatic'
+$StorageAccountName = 'carbonstatic3'
 $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName "carbon-common" -Name $StorageAccountName
 $Context = New-AzureStorageContext -StorageAccountKey $keys[0].Value -StorageAccountName $StorageAccountName
 $CorsRules = (@{

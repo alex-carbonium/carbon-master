@@ -16,14 +16,14 @@ $ErrorActionPreference = "Stop"
 
 function UploadFolder($Container, $Folder, $AccountKeys, [switch] $ForceZip = $false)
 {
-    $params = @("./js/uploadAzureFolder.js", "--container", $Container, "--folder", $Folder, "--account", "carbonstatic", "--key", $AccountKeys[0].Value, "--forceZip", $ForceZip)
+    $params = @("./js/uploadAzureFolder.js", "--container", $Container, "--folder", $Folder, "--account", "carbonstatic3", "--key", $AccountKeys[0].Value, "--forceZip", $ForceZip)
     & "node" $params
 }
 
 function UploadCdn()
 {
-    Get-CarbonEnvironment -Name "qa-1" | Connect-CarbonEnvironment
-    $keys = Get-AzureRmStorageAccountKey -ResourceGroupName "carbon-common" -Name "carbonstatic"
+    Get-CarbonEnvironment -Name "qa-3" | Connect-CarbonEnvironment
+    $keys = Get-AzureRmStorageAccountKey -ResourceGroupName "carbon-common" -Name "carbonstatic3"
 
     UploadFolder -Container "img" -Folder "$Env:InetRoot\carbon-ui\target\img" -AccountKeys $keys
     Remove-Item -r "$Env:InetRoot\carbon-ui\target\img\"
