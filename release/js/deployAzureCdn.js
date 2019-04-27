@@ -133,6 +133,7 @@ module.exports = function deploy(opt, files, loggerCallback, cb) {
         containerName: null, // container name, required
         containerOptions: {publicAccessLevel: "blob"}, // container options
         folder: '', // path within container
+        override:true,
         concurrentUploadThreads: 10, // number of concurrent uploads, choose best for your network condition
         zip: false, // gzip files if they become smaller after zipping, content-encoding header will change if file is zipped
         forceZip: false, //forces zipping to simplify reading in less important scenarios
